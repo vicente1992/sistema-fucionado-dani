@@ -8,6 +8,7 @@ use App\db_summary;
 use App\db_supervisor_has_agent;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class subEditController extends Controller
 {
@@ -48,17 +49,27 @@ class subEditController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,$id)
+    public function show(Request $request, $id)
     {
         $date_start = $request->date_start;
         $date_end = $request->date_end;
 
-        if(!isset($date_start)){return 'Fecha Inicio Vacia';};
+        if (!isset($date_start)) {
+            return 'Fecha Inicio Vacia';
+        };
 
-        $data_credit = db_supervisor_has_agent::where('id_wallet',$id)
-            ->join('credit','agent_has_supervisor.id_user_agent','=','credit.id_agent')
-            ->join('users','credit.id_user','=','users.id')
-            ->whereDate('credit.created_at','=',Carbon::createFromFormat('d/m/Y',$date_start)->toDateString())
+        $data_wallet = db_supervisor_has_agent::where('id_wallet', $id)
+            ->where('id_supervisor', Auth::id())
+            ->get();
+
+        if ($data_wallet->count() === 0) {
+            return 'No estas autorizado para realizar esta operación';
+        };
+
+        $data_credit = db_supervisor_has_agent::where('id_wallet', $id)
+            ->join('credit', 'agent_has_supervisor.id_user_agent', '=', 'credit.id_agent')
+            ->join('users', 'credit.id_user', '=', 'users.id')
+            ->whereDate('credit.created_at', '=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
             ->select(
                 'users.name',
                 'users.last_name',
@@ -71,12 +82,14 @@ class subEditController extends Controller
             )
             ->get();
 
+        // dd($data_credit);
 
-        $data_summary = db_supervisor_has_agent::where('id_wallet',$id)
-            ->join('summary','agent_has_supervisor.id_user_agent','=','summary.id_agent')
-            ->join('credit','summary.id_credit','=','credit.id')
-            ->join('users','credit.id_user','=','users.id')
-            ->whereDate('summary.created_at','=',Carbon::createFromFormat('d/m/Y',$date_start)->toDateString())
+
+        $data_summary = db_supervisor_has_agent::where('id_wallet', $id)
+            ->join('summary', 'agent_has_supervisor.id_user_agent', '=', 'summary.id_agent')
+            ->join('credit', 'summary.id_credit', '=', 'credit.id')
+            ->join('users', 'credit.id_user', '=', 'users.id')
+            ->whereDate('summary.created_at', '=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
             ->select(
                 'credit.id as credit_id',
                 'users.id',
@@ -92,13 +105,13 @@ class subEditController extends Controller
             )
             ->get();
 
-        foreach ($data_summary as $datum){
-            $datum->total_payment = db_summary::where('id_credit',$datum->credit_id)->sum('amount');
+        foreach ($data_summary as $datum) {
+            $datum->total_payment = db_summary::where('id_credit', $datum->credit_id)->sum('amount');
         }
 
-        $data_bill = db_bills::whereDate('created_at','=',Carbon::createFromFormat('d/m/Y',$date_start)->toDateString())
-         ->join('list_bill', 'bills.type', '=', 'list_bill.id')
-            ->where('id_wallet',$id)
+        $data_bill = db_bills::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
+            ->join('list_bill', 'bills.type', '=', 'list_bill.id')
+            ->where('id_wallet', $id)
             ->select(
                 'bills.*',
                 'list_bill.name as type_bill'
@@ -109,11 +122,11 @@ class subEditController extends Controller
             'summary' => $data_summary,
             'credit' => $data_credit,
             'bills' => $data_bill,
-            'id_wallet'=>$id,
+            'id_wallet' => $id,
             'date_start' => $date_start
         );
 
-        return view('submenu.edit.index',$data);
+        return view('submenu.edit.index', $data);
     }
 
     /**
@@ -124,8 +137,6 @@ class subEditController extends Controller
      */
     public function edit($id)
     {
-
-
     }
 
     /**
