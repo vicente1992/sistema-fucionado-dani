@@ -64,7 +64,7 @@ class routeController extends Controller
 
                 $findExist = !db_not_pay::whereDate('created_at', '=', Carbon::now()->toDateString())->where('id_credit', $d->id)->exists();
                 $findPending = !db_pending_pay::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists();
-                $findBlacklists = !db_blacklists::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists();
+                $findBlacklists = !db_blacklists::where('id_credit', $d->id)->exists();
                 if ($findExist && $findPending && $findBlacklists) {
                     $data_filter[] = $d;
                 }
