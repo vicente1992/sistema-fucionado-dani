@@ -30,9 +30,9 @@ class billsupervisorController extends Controller
         $current_role = Auth::user()->level;
         $current_user = Auth::id();
 
-   //Login Agent
+        //Login Agent
 
-   $ormQry = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
+        $ormQry = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
             ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->join('bills', 'wallet.id', '=', 'bills.id_wallet')
             ->join('list_bill', 'bills.type', '=', 'list_bill.id')
@@ -48,39 +48,45 @@ class billsupervisorController extends Controller
             );
 
         //        if($current_role === 'supervisor'){
-//
-//            $ormQry = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
-//                ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
-//                ->join('bills', 'wallet.id', '=', 'bills.id_wallet')
-//                ->join('list_bill', 'bills.type', '=', 'list_bill.id')
-//                ->join('users', 'bills.id_agent', '=', 'users.id')
-//                ->select(
-//                    'bills.created_at as created_at',
-//                    'wallet.name as wallet_name',
-//                    'bills.type as type',
-//                    'bills.description',
-//                    'list_bill.name as category_name',
-//                    'users.name as user_name',
-//                    DB::raw('SUM(bills.amount) as amount')
-//                );
-//        }
+        //
+        //            $ormQry = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
+        //                ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
+        //                ->join('bills', 'wallet.id', '=', 'bills.id_wallet')
+        //                ->join('list_bill', 'bills.type', '=', 'list_bill.id')
+        //                ->join('users', 'bills.id_agent', '=', 'users.id')
+        //                ->select(
+        //                    'bills.created_at as created_at',
+        //                    'wallet.name as wallet_name',
+        //                    'bills.type as type',
+        //                    'bills.description',
+        //                    'list_bill.name as category_name',
+        //                    'users.name as user_name',
+        //                    DB::raw('SUM(bills.amount) as amount')
+        //                );
+        //        }
 
 
 
-$ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
+        $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
             ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->join('bills', 'wallet.id', '=', 'bills.id_wallet');
 
         if (isset($date_star)) {
-            $ormQry = $ormQry->where('bills.created_at', '>=',
-                Carbon::createFromFormat('d/m/Y', $date_star)->toDateString());
+            $ormQry = $ormQry->where(
+                'bills.created_at',
+                '>=',
+                Carbon::createFromFormat('d/m/Y', $date_star)->toDateString()
+            );
             $ormSum = $ormSum
                 ->where('bills.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_star)->toDateString());
         }
 
         if (isset($date_end)) {
-            $ormQry = $ormQry->where('bills.created_at', '<=',
-                Carbon::createFromFormat('d/m/Y', $date_end)->toDateString());
+            $ormQry = $ormQry->where(
+                'bills.created_at',
+                '<=',
+                Carbon::createFromFormat('d/m/Y', $date_end)->toDateString()
+            );
             $ormSum = $ormSum
                 ->where('bills.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString());
         }
@@ -90,20 +96,15 @@ $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $
         }
         $sum = $ormSum->sum('bills.amount');
 
-        $data = $ormQry->groupBy('bills.id')->get();
-
-
+        $data = $ormQry->groupBy('bills.id')->orderBy('bills.created_at', 'desc')->get();
 
         $data = array(
             'clients' => $data,
             'sum' => $sum,
             'list_categories' => $list_categories,
-        );
-
-//        dd($data);
+        );      
 
         return view('supervisor_bill.index', $data);
-
     }
 
     /**
@@ -132,7 +133,7 @@ $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    { 
+    {
         $id_wallet = $request->id_wallet;
         $amount = $request->amount;
         $bill = $request->bill;
@@ -174,7 +175,7 @@ $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $
                 'wallet' => $wallet_audit->name,
                 'type' => $type_audit->name,
                 'id_agent' => Auth::id(),
-                'agent' => $user_audit->name.' '.$user_audit->last_name,
+                'agent' => $user_audit->name . ' ' . $user_audit->last_name,
                 'amount' => $amount
             )),
             'event' => 'create',
@@ -184,7 +185,6 @@ $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $
         db_audit::insert($audit);
 
         return redirect('/supervisor/bill');
-
     }
 
     /**
@@ -284,7 +284,9 @@ $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $
             ->join('wallet', 'bills.id_wallet', '=', 'wallet.id')
             ->join('list_bill', 'bills.type', '=', 'list_bill.id')
             ->join('users', 'bills.id_agent', '=', 'users.id')
-            ->select('bills.*', 'wallet.name as wallet_name',
+            ->select(
+                'bills.*',
+                'wallet.name as wallet_name',
                 'list_bill.name as category_name',
                 'users.name as user_name'
             )->get();
@@ -298,7 +300,7 @@ $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $
             'type' => 'Gasto'
         );
         db_audit::insert($audit);
-//        print_r(json_encode($bill));
+        //        print_r(json_encode($bill));
         db_bills::where('id', $id)->delete();
 
 

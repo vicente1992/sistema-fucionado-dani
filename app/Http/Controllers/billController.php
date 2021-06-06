@@ -39,7 +39,6 @@ class billController extends Controller
         } else {
             $sql[] = ['bills.created_at', '>=', Carbon::now()->startOfDay()];
             $sql[] = ['bills.created_at', '<=', Carbon::now()->endOfDay()];
-
         }
 
 
@@ -47,7 +46,9 @@ class billController extends Controller
             ->join('wallet', 'bills.id_wallet', '=', 'wallet.id')
             ->join('list_bill', 'bills.type', '=', 'list_bill.id')
             ->join('users', 'bills.id_agent', '=', 'users.id')
-            ->select('bills.*', 'wallet.name as wallet_name',
+            ->select(
+                'bills.*',
+                'wallet.name as wallet_name',
                 'list_bill.name as category_name',
                 'users.name as user_name'
             );
@@ -64,6 +65,7 @@ class billController extends Controller
             'total' => $data->sum('amount'),
             'list_categories' => $list_categories
         );
+
 
         return view('bill.index', $data);
     }
@@ -114,7 +116,7 @@ class billController extends Controller
             'data' => json_encode(array(
                 'description' => $description,
                 'agent_id' => Auth::id(),
-                'agent' => $user_audit->name.' '.$user_audit->last_name,
+                'agent' => $user_audit->name . ' ' . $user_audit->last_name,
                 'amount' => $amount,
                 'created_at' => Carbon::now(),
                 'type' => $type_audit->name,
@@ -161,7 +163,6 @@ class billController extends Controller
      */
     public function update(Request $request, $id)
     {
-
     }
 
     /**
