@@ -18,7 +18,6 @@ class subBillController extends Controller
      */
     public function index(Request $request)
     {
-
     }
 
     /**
@@ -48,7 +47,7 @@ class subBillController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,$id)
+    public function show(Request $request, $id)
     {
         $date_start = $request->date_start;
         $date_end = $request->date_end;
@@ -62,41 +61,78 @@ class subBillController extends Controller
             );
         }
 
-        if(!db_supervisor_has_agent::where('id_wallet',$id)->exists()){
+        if (!db_supervisor_has_agent::where('id_wallet', $id)->exists()) {
             return 'No existe agente con esta ruta';
         }
 
-        $data_agent = db_supervisor_has_agent::where('id_wallet',$id)->first();
-//        dd($data_agent);
-        $sql = array(
-            ['id_agent','=',$data_agent->id_user_agent]
-        );
-        if(isset($date_start) && isset($date_end)){
-            $sql[]=['bills.created_at','>=',Carbon::createFromFormat('d/m/Y',$date_start)];
-            $sql[]=['bills.created_at','<=',Carbon::createFromFormat('d/m/Y',$date_end)];
+        $data_agent = db_supervisor_has_agent::where('id_wallet', $id)->first();
+        //        dd($data_agent);
+        // $sql = array(
+        //     ['id_agent', '=', $data_agent->id_user_agent]
+        // );
+        // if (isset($date_start) && isset($date_end)) {
+        //     $sql[] = ['bills.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)];
+        //     $sql[] = ['bills.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)];
+        // }
+
+        // $data = db_bills::where($sql)
+        //     ->join('wallet', 'bills.id_wallet', '=', 'wallet.id')
+        //     ->join('list_bill', 'bills.type', '=', 'list_bill.id')
+        //     ->join('users', 'bills.id_agent', '=', 'users.id')
+        //     ->select(
+        //         'bills.*',
+        //         'wallet.name as wallet_name',
+        //         'users.name as user_name',
+        //         'list_bill.name as category_name',
+        //         'users.last_name as user_lastname'
+        //     )
+        //     ->orderBy('bills.created_at', 'desc')
+        //     ->get();
+        // if (isset($category)) {
+        //     $data = $data->where('bills.type', $category);
+        // }
+
+        //Cpi
+        $sql = [];
+
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_user_agent', '=', $data_agent->id_user_agent]
+            );
         }
 
-        $data=db_bills::where($sql)
-            ->join('wallet','bills.id_wallet','=','wallet.id')
+        if (isset($date_start) && isset($date_end)) {
+            $sql[] = ['bills.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)];
+            $sql[] = ['bills.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)];
+        }
+
+
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
+            ->join('bills', 'wallet.id', '=', 'bills.id_wallet')
+            ->join('users', 'bills.id_agent', '=', 'users.id')
             ->join('list_bill', 'bills.type', '=', 'list_bill.id')
-            ->join('users','bills.id_agent','=','users.id')
-            ->select('bills.*','wallet.name as wallet_name',
+            ->select(
+                'bills.*',
+                'wallet.name as wallet_name',
                 'users.name as user_name',
                 'list_bill.name as category_name',
-                'users.last_name as user_lastname')
+            )
+            ->orderBy('bills.created_at', 'desc')
             ->get();
-            if (isset($category)) {
-                $data = $data->where('bills.type', $category);
-            }
+
+        if (isset($category)) {
+            $data = $data->where('type', $category);
+        }
 
         $data = array(
-            'id'=>$id,
+            'id' => $id,
             'clients' => $data,
             'list_categories' => $list_categories,
             'total' => $data->sum('amount')
         );
 
-        return view('submenu.bill.index',$data);
+        return view('submenu.bill.index', $data);
     }
 
     /**

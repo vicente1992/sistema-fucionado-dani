@@ -47,6 +47,9 @@ class billsupervisorController extends Controller
                 DB::raw('SUM(bills.amount) as amount')
             );
 
+
+
+
         //        if($current_role === 'supervisor'){
         //
         //            $ormQry = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
@@ -70,6 +73,9 @@ class billsupervisorController extends Controller
         $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
             ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->join('bills', 'wallet.id', '=', 'bills.id_wallet');
+
+
+      
 
         if (isset($date_star)) {
             $ormQry = $ormQry->where(
@@ -98,11 +104,13 @@ class billsupervisorController extends Controller
 
         $data = $ormQry->groupBy('bills.id')->orderBy('bills.created_at', 'desc')->get();
 
+
         $data = array(
             'clients' => $data,
             'sum' => $sum,
             'list_categories' => $list_categories,
-        );      
+        );
+
 
         return view('supervisor_bill.index', $data);
     }

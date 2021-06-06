@@ -22,7 +22,7 @@ class graphController extends Controller
     {
         $type = $request->type;
         $response = array(
-            'data'=>[]
+            'data' => []
         );
         switch ($type) {
             case 'overdraft':
@@ -40,14 +40,21 @@ class graphController extends Controller
             default:
                 return view('graph.index', $response);
         }
-
     }
 
     private function getAgents(): array
     {
-        $data = db_supervisor_has_agent::where('id_supervisor',Auth::id())
-            ->join('users','id_user_agent','=','users.id')
-            ->join('wallet','agent_has_supervisor.id_wallet','=','wallet.id')
+
+        $user_current = Auth::user();
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->select(
                 'users.*',
                 'wallet.name as wallet_name'
@@ -109,12 +116,12 @@ class graphController extends Controller
         }
 
         if (count($datesThisWeek) && count($datesLastWeek)) {
-//         this week
+            //         this week
             $thisWeekendSql[] = ['created_at', '>=', reset($datesThisWeek)->startOfDay()];
             $thisWeekendSql[] = ['created_at', '<=', end($datesThisWeek)->hour(22)->minute(32)->second(5)->microsecond(123456)->toDateTimeString()];
             $thisWeekendSql[] = ['id_agent', $agent];
 
-//         last week
+            //         last week
             $lastWeekendSql[] = ['created_at', '>=', reset($datesLastWeek)->startOfDay()];
             $lastWeekendSql[] = ['created_at', '<=', end($datesLastWeek)->hour(22)->minute(32)->second(5)->microsecond(123456)->toDateTimeString()];
             $lastWeekendSql[] = ['id_agent', $agent];
@@ -133,10 +140,10 @@ class graphController extends Controller
         }
 
         return array(
-            'data'=> array_merge($dataGraph, array(
+            'data' => array_merge($dataGraph, array(
                 'labels' => array(
-                    'thisWeekend' => reset($datesThisWeek)->copy()->isoFormat('ddd D').' - '.end($datesThisWeek)->copy()->isoFormat('ddd D'),
-                    'lastWeekend' => reset($datesLastWeek)->copy()->isoFormat('ddd D').' - '.end($datesLastWeek)->copy()->isoFormat('ddd D')
+                    'thisWeekend' => reset($datesThisWeek)->copy()->isoFormat('ddd D') . ' - ' . end($datesThisWeek)->copy()->isoFormat('ddd D'),
+                    'lastWeekend' => reset($datesLastWeek)->copy()->isoFormat('ddd D') . ' - ' . end($datesLastWeek)->copy()->isoFormat('ddd D')
                 )
             ))
         );
@@ -190,7 +197,7 @@ class graphController extends Controller
         }
 
         return array(
-            'dataDays'=> array(
+            'dataDays' => array(
                 'labels' => $dataDaysLabels,
                 'data' => array(
                     'thisWeek' => $dataDaysThisWeek,
@@ -254,7 +261,7 @@ class graphController extends Controller
         }
 
         return array(
-            'dataDays'=> array(
+            'dataDays' => array(
                 'labels' => $dataDaysLabels,
                 'data' => array(
                     'thisWeek' => $dataDaysThisWeek,
@@ -318,7 +325,7 @@ class graphController extends Controller
         }
 
         return array(
-            'dataDays'=> array(
+            'dataDays' => array(
                 'labels' => $dataDaysLabels,
                 'data' => array(
                     'thisWeek' => $dataDaysThisWeek,

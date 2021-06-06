@@ -21,12 +21,21 @@ class dailyReportController extends Controller
      */
     public function index(Request $request)
     {
+        $user_current = Auth::user();
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
         $data = [];
-        $agents_for_supervisor = db_supervisor_has_agent::where('id_supervisor', Auth::id())->get();
+        $agents_for_supervisor = db_supervisor_has_agent::where($sql)->get();
 
         foreach ($agents_for_supervisor as $item) {
-            $data_summary = db_summary::whereDate('summary.created_at',
-                Carbon::now()->toDateString())
+            $data_summary = db_summary::whereDate(
+                'summary.created_at',
+                Carbon::now()->toDateString()
+            )
                 ->where('credit.id_agent', $item->id_user_agent)
                 ->join('credit', 'summary.id_credit', '=', 'credit.id')
                 ->join('users', 'credit.id_user', '=', 'users.id')
@@ -44,7 +53,7 @@ class dailyReportController extends Controller
                 ->groupBy('summary.id')
                 ->get();
             $user = User::find($item->id_user_agent);
-            $name = $user->name.' '.$user->last_name;
+            $name = $user->name . ' ' . $user->last_name;
             $now = Carbon::now();
             $current_date = $now->format('d-m-Y');
             $close_day = db_close_day::whereDate('created_at', Carbon::now()->toDateString())
