@@ -14,16 +14,14 @@ $valid = $gap_time->gte($now);
 
     <!-- navbar header -->
     <div class="navbar-header">
-
         <a href="{{url('logout')}}" class="navbar-toggle navbar-toggle-right collapsed p-3" id="logout">
             <i class="fa fa-2x fa-sign-out"></i>
         </a>
 
         <a href="{{url('/')}}" class="navbar-brand text-white">
             {{Auth::user()->name}}
-
-
         </a>
+
     </div><!-- .navbar-header -->
 
     <div class="navbar-container container-fluid">
