@@ -40,7 +40,7 @@ class routeController extends Controller
             ->orderBy('credit.order_list', 'asc')
             ->get();
         $data_filter = array();
-        $dt = Carbon::now();   
+        $dt = Carbon::now();
 
         foreach ($data as $k => $d) {
             $tmp_amount = db_summary::where('id_credit', $d->id)
@@ -55,7 +55,8 @@ class routeController extends Controller
             $d->payment_done = db_summary::where('id_credit', $d->id)->count();
             $d->user = User::find($d->id_user);
             $d->amount_total = $amount_total;
-            // $d->days_rest = $dt->diffInDays(Carbon::parse($d->created_at));
+
+            // $d->history =  db_summary::where('id_credit', $d->id)->get();
             $d->days_rest = db_not_pay::where('id_credit', $d->id)->count();
             $d->saldo = $d->amount_total - (db_summary::where('id_credit', $d->id)->sum('amount'));
             $d->quote = (floatval($d->amount_neto * $d->utility) + floatval($d->amount_neto)) / floatval($d->payment_number);
@@ -71,7 +72,6 @@ class routeController extends Controller
                 }
             }
         }
-
 
         $pending = db_pending_pay::where('id_agent', Auth::id())
             ->whereDate('pending_pays.created_at', '=', Carbon::now()->toDateString())
@@ -94,7 +94,6 @@ class routeController extends Controller
                 }
             }
         }
-
 
         $data_all = array(
             'clients' => $data_filter,

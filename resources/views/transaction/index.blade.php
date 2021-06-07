@@ -38,34 +38,6 @@
                                 </tbody>
                             </table>
 
-                            {{-- <table class="table agente-transactionV-table">
-                                <thead>
-                                    <tr>
-                                        <th>Nombres</th>
-                                        <th># Credito</th>
-                                        <th>Tipo de Negocio</th>
-                                        <th>Hora</th>
-                                        <th>Tasa</th>
-                                        <th>Cuotas</th>
-                                        <th>Valor neto</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    @foreach($credit as $cred)
-
-                                    <tr>
-                                        <td><span class="value">{{$cred->name}} {{$cred->last_name}}</span></td>
-                            <td><span class="value">{{$cred->credit_id}}</span></td>
-                            <td><span class="value">{{$cred->province}}</span></td>
-                            <td><span class="value">{{$cred->created_at}}</span></td>
-                            <td><span class="value">{{$cred->utility}}</span></td>
-                            <td><span class="value">{{$cred->payment_number}}</span></td>
-                            <td><span class="value">{{($cred->amount_neto)}}</span></td>
-                            </tr>
-                            @endforeach
-                            </tbody>
-                            </table> --}}
                         </div>
 
                         <!-- FOR MOBILE -->

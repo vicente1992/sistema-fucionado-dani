@@ -82,7 +82,6 @@ class NotPaymentController extends Controller
 
         foreach ($data_credit as $data) {
             if (db_credit::where('id_user', $data->id_user)->where('id_agent', Auth::id())->exists()) {
-
                 foreach ($dateRanges->toArray() as $dateRange) {
                     $day = Carbon::parse($dateRange)->Format('l');
                     $daysOfWeek[$day] =  db_summary::where('id_credit', $data->id_credit)

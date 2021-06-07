@@ -51,8 +51,8 @@ class NotPayExport implements FromCollection, WithHeadings, WithMapping, WithCol
 
                 $data->amount_neto = ($data->amount_neto) + ($data->amount_neto * $data->utility);
                 $data->positive = $data->amount_neto - (db_summary::where('id_credit', $data->id)
-                        ->where('id_agent', $this->user_id)
-                        ->sum('amount'));
+                    ->where('id_agent', $this->user_id)
+                    ->sum('amount'));
 
                 foreach ($dateRanges->toArray() as $dateRange) {
                     $day = Carbon::parse($dateRange)->Format('l');
@@ -64,7 +64,7 @@ class NotPayExport implements FromCollection, WithHeadings, WithMapping, WithCol
             }
         }
         return $data_credit;
-//            collect($this->parse_not_payments($data_credit));
+        //            collect($this->parse_not_payments($data_credit));
     }
     public function map($row): array
     {
@@ -105,7 +105,7 @@ class NotPayExport implements FromCollection, WithHeadings, WithMapping, WithCol
     {
         return [
             'A' => 40,
-            'B' => 12,
+            'B' => 40,
             'C' => 12,
             'D' => 12,
             'E' => 12,

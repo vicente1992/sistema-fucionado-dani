@@ -29,6 +29,7 @@
                                     <th class="hidden">Orden</th>
                                     <th># Credito</th>
                                     <th>Nombres</th>
+                                    <th>Fecha de prestamo</th>
                                     <th>Cuotas Atrasadas</th>
                                     <th>Cuota diaria</th>
                                     <th>Valor</th>
@@ -48,6 +49,7 @@
                                     <td class="hidden">{{$client->order_list}}</td>
                                     <td>{{$client->id}}</td>
                                     <td>{{$client->user->name}} {{$client->user->last_name}}</td>
+                                    <td>{{$client->created_at}}</td>
                                     <td>{{$client->days_rest}}</td>
                                     <td>{{$client->quote}}</td>
                                     <td>{{$client->amount_total}}</td>
