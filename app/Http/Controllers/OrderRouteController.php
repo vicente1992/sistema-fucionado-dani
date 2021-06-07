@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\db_blacklists;
 use App\db_credit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,13 @@ class OrderRouteController extends Controller
             )
             ->orderBy('credit.order_list', 'asc')
             ->get();
+        $data = [];
+        foreach ($clients as $c) {
+            if (!db_blacklists::where('id_credit', $c->id)->exists()) {
+                $data[] = $c;
+            }
+        }
+        dd($data);
 
         $data = array(
             'clients' => $clients

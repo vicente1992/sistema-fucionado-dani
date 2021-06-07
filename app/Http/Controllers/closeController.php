@@ -56,6 +56,7 @@ class closeController extends Controller
                 $datum->show = false;
             }
         }
+        // dd($data);
 
         $data = array(
             'clients' => $data,
@@ -161,11 +162,11 @@ class closeController extends Controller
             return 'Base vacio';
         };
 
-        $agent_data = db_supervisor_has_agent::where('id_user_agent', $id)
+        $agent_data = db_supervisor_has_agent::where('id_wallet', $id)
             ->where('id_supervisor', Auth::id())
             ->first();
 
-        db_supervisor_has_agent::where('id_user_agent', $id)
+        db_supervisor_has_agent::where('id_wallet', $id)
             ->where('id_supervisor', Auth::id())
             ->update(['base' => $total]);
 
