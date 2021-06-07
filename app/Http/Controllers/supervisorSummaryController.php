@@ -136,6 +136,9 @@ class supervisorSummaryController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+
+        $id_wallet = $request->id_wallet;
+        $date_start = $request->date_start;
         $summary = db_summary::find($id);
         $credit = db_credit::where('credit.id', $summary->id_credit)
             ->join('users', 'credit.id_user', '=', 'users.id')
@@ -171,6 +174,7 @@ class supervisorSummaryController extends Controller
         db_audit::insert($audit);
         db_summary::where('id', $id)->delete();
 
-        return redirect('/supervisor/menu/edit/' . $id . '?date_start=' . urlencode($request->date_start));
+        // return redirect('/supervisor/menu/edit/' . $id . '?date_start=' . urlencode($request->date_start));
+        return redirect('supervisor/menu/edit/' . $id_wallet . '?date_start=' . $date_start);
     }
 }
