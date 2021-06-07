@@ -9,6 +9,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class supervisorSummaryController extends Controller
 {
@@ -60,15 +61,19 @@ class supervisorSummaryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request,$id)
+    public function edit(Request $request, $id)
     {
 
         $id_wallet = $request->id_wallet;
-        if(!isset($id_wallet)){return 'ID wallet';};
+        Cookie::queue('date_start_sum', $request->date_start);
+        // dd($date_start);
+        if (!isset($id_wallet)) {
+            return 'ID wallet';
+        };
 
-        $data = db_summary::where('summary.id',$id)
-            ->join('credit','summary.id_credit','=','credit.id')
-            ->join('users','credit.id_user','=','users.id')
+        $data = db_summary::where('summary.id', $id)
+            ->join('credit', 'summary.id_credit', '=', 'credit.id')
+            ->join('users', 'credit.id_user', '=', 'users.id')
             ->select(
                 'users.name',
                 'users.last_name',
@@ -83,7 +88,7 @@ class supervisorSummaryController extends Controller
 
         $data->id_wallet = $id_wallet;
 
-        return view('submenu.summary.edit',$data);
+        return view('submenu.summary.edit', $data);
     }
 
     /**
@@ -95,13 +100,17 @@ class supervisorSummaryController extends Controller
      */
     public function update(Request $request, $id)
     {
-            $id_wallet = $request->id_wallet;
-            $amount = $request->amount;
+        $id_wallet = $request->id_wallet;
+        $amount = $request->amount;
 
-            if(!isset($id_wallet)){ return 'ID wallet';};
-            if(!isset($amount)){ return 'Amount';};
+        if (!isset($id_wallet)) {
+            return 'ID wallet';
+        };
+        if (!isset($amount)) {
+            return 'Amount';
+        };
 
-            db_summary::where('id',$id)->update(['amount'=>$amount]);
+        db_summary::where('id', $id)->update(['amount' => $amount]);
         $audit = array(
             'created_at' => Carbon::now(),
             'id_user' => Auth::id(),
@@ -112,7 +121,11 @@ class supervisorSummaryController extends Controller
         );
         db_audit::insert($audit);
 
-            return redirect('supervisor/menu/edit/create?id_wallet='.$id_wallet);
+        $date_start =  Cookie::get('date_start_sum');
+        if (!isset($date_start)) {
+            return redirect('supervisor/menu/edit/create?id_wallet=' . $id_wallet);
+        }
+        return redirect('supervisor/menu/edit/' . $id_wallet . '?date_start=' . $date_start);
     }
 
     /**
@@ -121,7 +134,7 @@ class supervisorSummaryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         $summary = db_summary::find($id);
         $credit = db_credit::where('credit.id', $summary->id_credit)
@@ -133,11 +146,12 @@ class supervisorSummaryController extends Controller
                 'credit.payment_number as credit_payment_number',
                 'credit.utility as credit_utility',
                 'credit.status as credit_status',
-                'users.name as credit_user_name')
+                'users.name as credit_user_name'
+            )
             ->first();
 
         $user_audit = User::find($summary->id_agent);
-        $credit['agent'] = $user_audit->name.' '.$user_audit->last_name;
+        $credit['agent'] = $user_audit->name . ' ' . $user_audit->last_name;
         $credit['id'] = $summary->id;
         $credit['amount'] = $summary->amount;
         $credit['id_agent'] = $summary->id_agent;
@@ -155,8 +169,8 @@ class supervisorSummaryController extends Controller
             'type' => 'Pago'
         );
         db_audit::insert($audit);
-        db_summary::where('id',$id)->delete();
+        db_summary::where('id', $id)->delete();
 
-        return redirect('/supervisor/menu/edit/'.$id.'?date_start='.urlencode($request->date_start));
+        return redirect('/supervisor/menu/edit/' . $id . '?date_start=' . urlencode($request->date_start));
     }
 }
