@@ -28,7 +28,7 @@
                                         <td><span class="value">{{$today}}</span></td>
                                         <td><span class="value">{{$client->address}}</span></td>
                                         <td>
-                                            <a href="{{url('supervisor/close')}}/{{$client->wallet_id}}"
+                                            <a href="{{url('supervisor/close')}}/{{$client->id_user_agent}}"
                                                 class="btn btn-danger btn-xs">Cerrar</a>
                                         </td>
                                     </tr>
@@ -61,7 +61,7 @@
                                         <td><span class="value">{{$today}}</span></td>
                                         <td><span class="value">{{$client->address}}</span></td>
                                         <td>
-                                            <a href="{{url('supervisor/close')}}/{{$client->wallet_id}}"
+                                            <a href="{{url('supervisor/close')}}/{{$client->id_user_agent}}"
                                                 class="btn btn-danger btn-xs">Cerrar</a>
                                         </td>
                                     </tr>

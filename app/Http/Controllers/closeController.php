@@ -29,12 +29,12 @@ class closeController extends Controller
             ->join('users', 'agent_has_supervisor.id_user_agent', '=', 'users.id')
             ->get();
 
+
         foreach ($data as $datum) {
             $datum->show = true;
             $datum->wallet_name = db_wallet::where('id', $datum->id_wallet)->first()->name;
-            $datum->wallet_id = db_wallet::where('id', $datum->id_wallet)->first()->id;
             $summary = db_summary::whereDate('created_at', '=', Carbon::now()->toDateString())
-                ->where('id_agent', $datum->id_user_agernt)
+                ->where('id_agent', $datum->id_user_agent)
                 ->exists();
 
             if ($summary) {
@@ -42,7 +42,7 @@ class closeController extends Controller
             }
 
             $credit = db_credit::whereDate('created_at', '=', Carbon::now()->toDateString())
-                ->where('id_agent', $datum->id_user_agernt)
+                ->where('id_agent', $datum->id_user_agent)
                 ->exists();
 
             if ($credit) {
@@ -52,11 +52,12 @@ class closeController extends Controller
             $close_day = db_close_day::where('id_agent', $datum->id_user_agent)
                 ->whereDate('created_at', '=', Carbon::now()->toDateString())
                 ->exists();
+            // dd($close_day);
             if ($close_day) {
                 $datum->show = false;
             }
         }
-        // dd($data);
+
 
         $data = array(
             'clients' => $data,
@@ -96,18 +97,19 @@ class closeController extends Controller
      */
     public function show($id)
     {
-        $wallet = db_bills::whereDate('created_at', '=', Carbon::now()->toDateString())
-            ->where('id_wallet', $id)->first();
 
+        $id_wallet = db_supervisor_has_agent::where('id_user_agent', $id)
+            ->pluck('id_wallet');
 
-        if (isset($wallet->id_wallet)) {
+        if (isset($id_wallet)) {
             $bills = db_bills::whereDate('created_at', '=', Carbon::now()->toDateString())
-                ->where('id_wallet', $wallet->id_wallet)
+                ->where('id_wallet', $id_wallet)
                 ->sum('amount');
         } else {
             $bills = 0;
         }
-        $base_amount = db_supervisor_has_agent::where('id_wallet', $id)->first()->base;
+
+        $base_amount = db_supervisor_has_agent::where('id_user_agent', $id)->first()->base;
 
         $today_amount = db_summary::whereDate('created_at', '=', Carbon::now()->toDateString())
             ->where('id_agent', $id)
@@ -162,7 +164,7 @@ class closeController extends Controller
             return 'Base vacio';
         };
 
-        $agent_data = db_supervisor_has_agent::where('id_wallet', $id)
+        $agent_data = db_supervisor_has_agent::where('id_user_agent', $id)
             ->where('id_supervisor', Auth::id())
             ->first();
 
