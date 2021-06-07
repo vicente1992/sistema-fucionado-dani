@@ -5,12 +5,16 @@ namespace App\Exports;
 use App\db_credit;
 use App\db_summary;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithEvents
+class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithColumnWidths, WithEvents
+
+
+
 {
     public function __construct(int  $user_id)
     {
@@ -51,6 +55,7 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithEv
     public function map($row): array
     {
         return [
+            $row->created_at,
             $row->name . ' ' . $row->last_name,
             $row->credit_id,
             $row->amount_neto,
@@ -68,6 +73,7 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithEv
     public function headings(): array
     {
         return [
+            'Fecha',
             'Nombres',
             'Credito',
             'Valor',
@@ -77,21 +83,40 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithEv
             'Cuotas totales',
         ];
     }
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 30,
+            'B' => 30,
+            'C' => 12,
+            'D' => 12,
+            'E' => 18,
+            'F' => 18,
+            'G' => 18,
+            'H' => 18,
+        ];
+    }
     public function registerEvents(): array
     {
         $styleArray = [
-            'font' => ['bold' => true], 'alignment' => ['horizontal' => 'center']
+            'font' => ['bold' => true], 'alignment' => ['horizontal' => 'center'],
+            'fill' => ['fillType' => 'solid', 'color' => array('rgb' => 'EBFA1B')],
+        ];
+        $styleArray4 = [
+            'alignment' => ['horizontal' => 'center']
         ];
         return [
             AfterSheet::class    => function (AfterSheet $event) use (
-                $styleArray
+                $styleArray,
+                $styleArray4
             ) {
 
-                $event->sheet->autoSize(true);
+                // $event->sheet->autoSize(true);
                 $to = $event->sheet->getDelegate()->getHighestRowAndColumn();
                 $rows = $event->sheet->getDelegate()->toArray();
-                $cellRange = 'A1:G1';
+                $cellRange = 'A1:H1';
                 $event->sheet->getStyle($cellRange)->ApplyFromArray($styleArray);
+                $event->sheet->getStyle('A:H')->ApplyFromArray($styleArray4);
                 $event->sheet->getStyle('A1')->applyFromArray([
                     'borders' => [
                         'outline' => [
@@ -108,7 +133,46 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithEv
                         ],
                     ],
                 ]);
+
+                $column_b = '';
+                $column_c = '';
+                $column_d = 0;
+                $column_e = 0;
+                foreach ($rows as  $row) {
+                    if (is_numeric($row[4])) {
+                        $column_d += $row[4];
+                    }
+                    if (is_numeric($row[5])) {
+                        $column_e += $row[5];
+                    }
+                }
+
+                $event->sheet->appendRows(
+                    array(
+                        array(
+                            'Total',
+                            "$column_b",
+                            "$column_c",
+                            "$column_d",
+                            "$column_e",
+                        ),
+                    ),
+                    $event
+                );
+                $total_rows = count($rows) + 1;
+                $range = 'A' . $total_rows . ':' . 'H' . $total_rows;
+                $event->sheet->getStyle($range)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                    'fill' => ['fillType' => 'solid'],
+                ]);
             },
+
+
         ];
     }
 }

@@ -123,7 +123,7 @@ class NotPayExport implements FromCollection, WithHeadings, WithMapping, WithCol
     {
 
         $styleArray = [
-            'font' => ['bold' => true], 'alignment' => ['horizontal' => 'center']
+            'font' => ['bold' => true], 'alignment' => ['horizontal' => 'center'],
         ];
         $styleArray2 = [
             'fill' => ['fillType' => 'solid', 'color' => array('rgb' => '18B4FF')],

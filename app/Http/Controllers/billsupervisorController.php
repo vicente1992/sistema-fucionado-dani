@@ -75,7 +75,7 @@ class billsupervisorController extends Controller
             ->join('bills', 'wallet.id', '=', 'bills.id_wallet');
 
 
-      
+
 
         if (isset($date_star)) {
             $ormQry = $ormQry->where(

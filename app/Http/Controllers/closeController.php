@@ -32,6 +32,7 @@ class closeController extends Controller
         foreach ($data as $datum) {
             $datum->show = true;
             $datum->wallet_name = db_wallet::where('id', $datum->id_wallet)->first()->name;
+            $datum->wallet_id = db_wallet::where('id', $datum->id_wallet)->first()->id;
             $summary = db_summary::whereDate('created_at', '=', Carbon::now()->toDateString())
                 ->where('id_agent', $datum->id_user_agernt)
                 ->exists();
@@ -54,7 +55,6 @@ class closeController extends Controller
             if ($close_day) {
                 $datum->show = false;
             }
-
         }
 
         $data = array(
@@ -64,7 +64,6 @@ class closeController extends Controller
         );
 
         return view('supervisor_agent.indexclose', $data);
-
     }
 
     /**
@@ -97,22 +96,25 @@ class closeController extends Controller
     public function show($id)
     {
         $wallet = db_bills::whereDate('created_at', '=', Carbon::now()->toDateString())
-            ->where('id_agent', $id)->first();
+            ->where('id_wallet', $id)->first();
 
-        if(isset($wallet->id_wallet)) {
+
+        if (isset($wallet->id_wallet)) {
             $bills = db_bills::whereDate('created_at', '=', Carbon::now()->toDateString())
-            ->where('id_wallet', $wallet->id_wallet)
-            ->sum('amount');
-        } else {$bills = 0;}
+                ->where('id_wallet', $wallet->id_wallet)
+                ->sum('amount');
+        } else {
+            $bills = 0;
+        }
+        $base_amount = db_supervisor_has_agent::where('id_wallet', $id)->first()->base;
 
-        $base_amount = db_supervisor_has_agent::where('id_user_agent', $id)->first()->base;
         $today_amount = db_summary::whereDate('created_at', '=', Carbon::now()->toDateString())
             ->where('id_agent', $id)
             ->sum('amount');
         $today_sell = db_credit::whereDate('created_at', '=', Carbon::now()->toDateString())
             ->where('id_agent', $id)
             ->sum('amount_neto');
-        
+
         $total = floatval($base_amount + $today_amount) - floatval($today_sell + $bills);
         $average = 1000;
 
@@ -188,9 +190,9 @@ class closeController extends Controller
         $audit = array(
             'created_at' => Carbon::now(),
             'id_user' => Auth::id(),
-            'data' => json_encode( array(
+            'data' => json_encode(array(
                 'id_agent' => $id,
-                'agent' => $user_audit->name.' '.$user_audit->last_name,
+                'agent' => $user_audit->name . ' ' . $user_audit->last_name,
                 'id_wallet' => $agent_data->id_wallet,
                 'wallet' => $wallet_audit->name,
                 'id_supervisor' => Auth::id(),
@@ -220,6 +222,5 @@ class closeController extends Controller
 
     public function close_automatic()
     {
-        
     }
 }
