@@ -79,11 +79,35 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithEv
     }
     public function registerEvents(): array
     {
-
+        $styleArray = [
+            'font' => ['bold' => true], 'alignment' => ['horizontal' => 'center']
+        ];
         return [
-            AfterSheet::class    => function (AfterSheet $event) {
+            AfterSheet::class    => function (AfterSheet $event) use (
+                $styleArray
+            ) {
 
                 $event->sheet->autoSize(true);
+                $to = $event->sheet->getDelegate()->getHighestRowAndColumn();
+                $rows = $event->sheet->getDelegate()->toArray();
+                $cellRange = 'A1:G1';
+                $event->sheet->getStyle($cellRange)->ApplyFromArray($styleArray);
+                $event->sheet->getStyle('A1')->applyFromArray([
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ]);
+                $event->sheet->getStyle('A1:' . $to['column'] . $to['row'])->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ]);
             },
         ];
     }

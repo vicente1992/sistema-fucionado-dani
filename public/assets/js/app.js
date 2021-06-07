@@ -875,6 +875,9 @@ function limpiarNumero(obj) {
         dragClass: 'drag',
 
     });
+     if (!localStorage.getItem('change-list')) {
+         $('#complete-item-drop-route').sortable('destroy');
+    }
 
     function changeOrderRoute() {
         var completeArr = [];
@@ -889,9 +892,7 @@ function limpiarNumero(obj) {
             },
             data: { completeArr }
         }).done(function (res) {
-            if (res.status === 'success') {
-                window.location.reload();
-            }
+
         });
     };
 
