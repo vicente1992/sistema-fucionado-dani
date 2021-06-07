@@ -23,28 +23,51 @@ class blacklistsController extends Controller
         //      ->join('credit', 'summary.id_credit', '=', 'credit.id')
 
         $clients = db_blacklists::where('id_agent', Auth::id())
-            ->join('credit','credit.id','=','blacklists.id_credit')
-            ->join('users','credit.id_user','=','users.id')
+            ->join('credit', 'credit.id', '=', 'blacklists.id_credit')
+            ->join('users', 'credit.id_user', '=', 'users.id')
             ->select(
                 'blacklists.*',
+                'credit.id as id_credit',
+                'credit.status',
                 'users.name as user_name',
                 'users.last_name as user_last_name'
             )
-            ->orderBy('id','DESC')
+            ->orderBy('id', 'DESC')
             ->get();
 
 
+        // $clients = [];
+        // foreach ($data_credit as $d) {
+        //     // $clients[] =  db_credit::where('id_agent', $d->id_credit)
+        //     //     ->where('credit.status', 'inprogress')
+        //     //     // ->join('blacklists', 'blacklists.id_credit', '=', 'credit.id')
+        //     //     ->get();
+        //     $clients[] = db_credit::where('credit.id', $d->id_credit)
+        //         ->where('credit.status', 'inprogress')
+        //         ->join('blacklists', 'blacklists.id_credit', '=', 'credit.id')
+        //         ->join('users', 'credit.id_user', '=', 'users.id')
+        //         ->select(
+        //             'credit.*',
+        //             'blacklists.created_at as blac_created_at',
+        //             'users.name as user_name',
+        //             'users.last_name as user_last_name'
+        //             // 'users.id as id_user',
+        //             // 'users.name',
+        //             // 'users.last_name'
+        //         )
+        //         ->get();
+        // }
 
-//        dd($clients);
 
 
         $data = array(
             'clients' => $clients
         );
+        // dd($data);
 
-//        dd($data);
+        // dd($data);
 
-        return view('blacklists.index',$data);
+        return view('blacklists.index', $data);
     }
 
     /**

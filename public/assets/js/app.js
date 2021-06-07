@@ -115,7 +115,7 @@ function initialize() {
     autocomplete.addListener('place_changed', function () {
         const place = autocomplete.getPlace();
 
-        if(place) {
+        if (place) {
             coordinates = {
                 lat: place.geometry['location'].lat(),
                 lng: place.geometry['location'].lng()
@@ -142,10 +142,10 @@ function toggleBounce(event) {
 
 }
 
-geocodeLatLng = ({lat, lng}) => {
+geocodeLatLng = ({ lat, lng }) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode(
-        { location: {lat, lng} },
+        { location: { lat, lng } },
         (
             results = google.maps.GeocoderResult,
             status = google.maps.GeocoderStatus
@@ -867,7 +867,36 @@ function limpiarNumero(obj) {
                 }
             })
     });
-    // Drag and Drop
+    // Drag and Drop view order route
+    $('#complete-item-drop-route').sortable({
+        animation: 150,
+        onSort: changeOrderRoute,
+        chosenClass: 'select',
+        dragClass: 'drag',
+
+    });
+
+    function changeOrderRoute() {
+        var completeArr = [];
+        $("#complete-item-drop-route tr").each(function () {
+            completeArr.push({ id: $(this).attr('item-id') });
+        });
+        $.ajax({
+            url: '/route',
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: { completeArr }
+        }).done(function (res) {
+            if (res.status === 'success') {
+                window.location.reload();
+            }
+        });
+    };
+
+
+    // Drag and Drop view init route
     $('#complete-item-drop').sortable({
         animation: 150,
         onSort: changeOrder,

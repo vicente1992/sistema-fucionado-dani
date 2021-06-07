@@ -233,6 +233,31 @@
         </div><!-- .widget -->
     </a>
 </div>
+<div class="col-md-3 col-sm-6 hidden">
+    <a href="{{url('not-pay-day')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-danger">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Clientes que no pagaro hoy</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('order-route')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-info">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Ordenar Ruta</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-car"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+
+</div>
 
 @endsection
 

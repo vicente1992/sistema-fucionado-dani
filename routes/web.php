@@ -37,6 +37,8 @@ Route::middleware(['auth', 'device'])->group(function () {
     Route::resource('transaction', 'transactionController');
     Route::resource('bill', 'billController')->middleware('close');
     Route::resource('not-pay', 'NotPaymentController')->middleware('auth');
+    Route::resource('not-pay-day', 'notPaymentsOfDay')->middleware('auth');
+    Route::resource('order-route', 'OrderRouteController')->middleware('auth');
     Route::get('export', 'NotPaymentController@export')->middleware('auth');
 });
 
