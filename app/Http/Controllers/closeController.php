@@ -100,7 +100,6 @@ class closeController extends Controller
 
         $id_wallet = db_supervisor_has_agent::where('id_user_agent', $id)
             ->pluck('id_wallet');
-
         if (isset($id_wallet)) {
             $bills = db_bills::whereDate('created_at', '=', Carbon::now()->toDateString())
                 ->where('id_wallet', $id_wallet)
@@ -168,7 +167,7 @@ class closeController extends Controller
             ->where('id_supervisor', Auth::id())
             ->first();
 
-        db_supervisor_has_agent::where('id_wallet', $id)
+        db_supervisor_has_agent::where('id_user_agent', $id)
             ->where('id_supervisor', Auth::id())
             ->update(['base' => $total]);
 
