@@ -35,10 +35,9 @@ class OrderRouteController extends Controller
                 $data[] = $c;
             }
         }
-        dd($data);
 
         $data = array(
-            'clients' => $clients
+            'clients' => $data
         );
         // dd($data);
         return view('order_route.index', $data);
