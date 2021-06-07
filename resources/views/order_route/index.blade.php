@@ -10,6 +10,8 @@
         <div class="col-md-12">
           <div class="widget p-lg overflow-auto">
             <h4 class="m-b-lg">Ordenar ruta</h4>
+            <button class="btn btn-primary float-left mb-4" id="changeList">Ordenar lista</button>
+            <button class="btn btn-primary float-left d-none  mb-4" id="seeList">Ver lista</button>
             @if(app('request')->input('hide'))
             <div class="alert alert-warning alert-custom alert-dismissible">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
