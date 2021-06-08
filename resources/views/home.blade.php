@@ -56,7 +56,7 @@
 <div class="col-md-3 col-sm-6">
     <a href="{{url('supervisor/graph?type=default')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-success">
+            <div class="widget-body clearfix bg-secondary">
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Graficas</h3>
                 </div>
@@ -213,7 +213,7 @@
         <div class="widget stats-widget">
             <div class="widget-body clearfix bg-primary">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Clientes que no pagaron</h3>
+                    <h3 class="widget-title text-white">Reporte Semanal</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
             </div>
@@ -224,9 +224,9 @@
 <div class="col-md-3 col-sm-6">
     <a href="{{ url('pending-pay') }}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-primary">
+            <div class="widget-body clearfix bg-warning">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Morosos</h3>
+                    <h3 class="widget-title text-white">Clientes Morosos</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
             </div>
@@ -238,7 +238,7 @@
         <div class="widget stats-widget">
             <div class="widget-body clearfix bg-danger">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Clientes que no pagaro hoy</h3>
+                    <h3 class="widget-title text-white">Clientes que no pagaron hoy</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
             </div>

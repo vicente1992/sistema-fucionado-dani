@@ -71,7 +71,7 @@
 
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <a href="{{url('supervisor/menu/edit/create')}}?id_wallet={{$id}}">
+                            <a href="{{url('supervisor/review/')}}/{{$id}}">
                                 <div class="widget stats-widget">
                                     <div class="widget-body clearfix bg-danger">
                                         <div class="pull-left">
