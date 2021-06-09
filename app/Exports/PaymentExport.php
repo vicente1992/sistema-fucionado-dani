@@ -138,12 +138,15 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithCo
                 $column_c = '';
                 $column_d = 0;
                 $column_e = 0;
+                $column_f = '';
+                $column_g = '';
+                $column_h = '';
                 foreach ($rows as  $row) {
-                    if (is_numeric($row[4])) {
-                        $column_d += $row[4];
+                    if (is_numeric($row[3])) {
+                        $column_d = $column_d + $row[3];
                     }
-                    if (is_numeric($row[5])) {
-                        $column_e += $row[5];
+                    if (is_numeric($row[4])) {
+                        $column_e = $column_e + $row[4];
                     }
                 }
 
@@ -155,6 +158,9 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithCo
                             "$column_c",
                             "$column_d",
                             "$column_e",
+                            " $column_f",
+                            "$column_g",
+                            "$column_h"
                         ),
                     ),
                     $event
