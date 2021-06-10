@@ -54,10 +54,10 @@ class LoginController extends Controller
             'Dispositivo' => $a,
             'Tipo' => $agent->device(),
             'Ip' => $geoIp['ip'],
-            'plataforma' => $agent->platform(),
-            'Direccion' => $result->location->city,
-            'Mapa' => 'https://www.google.com/maps/search/?api=1&query=' . $result->location->latitude . ',' . $result->location->longitude,
-            'Coordenadas' => $result->location->latitude . ',' . $result->location->longitude,
+            // 'plataforma' => $agent->platform(),
+            // 'Direccion' => $result->location->city,
+            // 'Mapa' => 'https://www.google.com/maps/search/?api=1&query=' . $result->location->latitude . ',' . $result->location->longitude,
+            // 'Coordenadas' => $result->location->latitude . ',' . $result->location->longitude,
         );
 
         $user = User::find(Auth::id());

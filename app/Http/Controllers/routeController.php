@@ -10,6 +10,7 @@ use App\db_summary;
 use App\db_supervisor_has_agent;
 use App\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,7 +41,8 @@ class routeController extends Controller
             ->orderBy('credit.order_list', 'asc')
             ->get();
         $data_filter = array();
-        $dt = Carbon::now();
+        $dt = Carbon::now()->toDateString();
+
 
         foreach ($data as $k => $d) {
             $tmp_amount = db_summary::where('id_credit', $d->id)
@@ -55,11 +57,19 @@ class routeController extends Controller
             $d->payment_done = db_summary::where('id_credit', $d->id)->count();
             $d->user = User::find($d->id_user);
             $d->amount_total = $amount_total;
-            $d->days_rest = db_not_pay::where('id_credit', $d->id)->count();
+            // $d->days_rest = db_not_pay::where('id_credit', $d->id)->count();
+            $d->days_summ =  db_summary::where('id_credit', $d->id)->count();
             // $d->days_rest = $dt->diffInDays(Carbon::parse($d->created_at));
+            // $d->num_days = $d->created_at->diffInDays($dt);
             $d->saldo = $d->amount_total - (db_summary::where('id_credit', $d->id)->sum('amount'));
             $d->quote = (floatval($d->amount_neto * $d->utility) + floatval($d->amount_neto)) / floatval($d->payment_number);
             $d->setAttribute('last_pay', db_summary::where('id_credit', $d->id)->orderBy('id', 'desc')->first());
+
+            $days_crea = $d->created_at->diffInDaysFiltered(function (Carbon $date) {
+                return !$date->isSunday();
+            }, $dt);
+            // $d->days_crea = $days_crea;
+            $d->days_rest = $days_crea - db_summary::where('id_credit', $d->id)->count() - 1;
 
             if (!db_summary::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists()) {
 
@@ -93,16 +103,6 @@ class routeController extends Controller
                 }
             }
         }
-        //     $daysOfWeek = [];
-        //     foreach ($data_filter as $key => $d) {
-        //         $days = $d->days_pay;
-        //         for ($i = 0; $i < $days; $i++) {
-        //             $daysOfWeek[] =  db_summary::where('id_credit', $d->id)->get();
-        //         }
-        //         $d->history = $daysOfWeek;
-        //         $days = 0;
-        //     }
-        //    dd($data_filter);
         $data_all = array(
             'clients' => $data_filter,
             'pending' => $data_filter_pending
