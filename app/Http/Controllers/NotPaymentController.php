@@ -91,8 +91,6 @@ class NotPaymentController extends Controller
                 $data->summary_day = $daysOfWeek;
             }
         }
-       
-
         $data_credit = $this->parse_not_payments($data_credit);
 
         $data = array(
