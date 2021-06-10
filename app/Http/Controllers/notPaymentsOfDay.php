@@ -40,11 +40,10 @@ class notPaymentsOfDay extends Controller
                     ->get();
                 $data_credits[] = $this->parse_not_payments($clients);
             }
-        }      
+        }
 
-
-       $data = array(
-            'clients' => $data_credits
+        $data = array(
+            'clients' => $data_credits ?? []
         );
         return view('not-payments-day.index', $data);
     }

@@ -55,9 +55,8 @@ class routeController extends Controller
             $d->payment_done = db_summary::where('id_credit', $d->id)->count();
             $d->user = User::find($d->id_user);
             $d->amount_total = $amount_total;
-
-            // $d->history =  db_summary::where('id_credit', $d->id)->get();
             $d->days_rest = db_not_pay::where('id_credit', $d->id)->count();
+            // $d->days_rest = $dt->diffInDays(Carbon::parse($d->created_at));
             $d->saldo = $d->amount_total - (db_summary::where('id_credit', $d->id)->sum('amount'));
             $d->quote = (floatval($d->amount_neto * $d->utility) + floatval($d->amount_neto)) / floatval($d->payment_number);
             $d->setAttribute('last_pay', db_summary::where('id_credit', $d->id)->orderBy('id', 'desc')->first());
@@ -94,7 +93,16 @@ class routeController extends Controller
                 }
             }
         }
-
+        //     $daysOfWeek = [];
+        //     foreach ($data_filter as $key => $d) {
+        //         $days = $d->days_pay;
+        //         for ($i = 0; $i < $days; $i++) {
+        //             $daysOfWeek[] =  db_summary::where('id_credit', $d->id)->get();
+        //         }
+        //         $d->history = $daysOfWeek;
+        //         $days = 0;
+        //     }
+        //    dd($data_filter);
         $data_all = array(
             'clients' => $data_filter,
             'pending' => $data_filter_pending

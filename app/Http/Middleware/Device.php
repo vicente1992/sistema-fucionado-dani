@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Middleware;
+
 use Jenssegers\Agent\Agent;
 use Closure;
 use Torann\GeoIP\Facades\GeoIP;
@@ -19,7 +20,7 @@ class Device
         $agent = new Agent();
         $a = ($agent->isMobile() || $agent->isTablet()) ? 'Móvil' : 'Escritorio';
         $geoIp = GeoIP::getLocation($request->ip());
-        $url = 'https://api.ipregistry.co/'.$geoIp['ip'].'?key=q49696zvy4aq1y';
+        $url = 'https://api.ipregistry.co/' . $geoIp['ip'] . '?key=q49696zvy4aq1y';
         //  Initiate curl
         $ch = curl_init();
         // Will return the response, if false it print the response
@@ -27,7 +28,7 @@ class Device
         // Set the url
         curl_setopt($ch, CURLOPT_URL, $url);
         // Execute
-        $result=curl_exec($ch);
+        $result = curl_exec($ch);
         // Closing
         curl_close($ch);
 
@@ -39,10 +40,10 @@ class Device
             'Dispositivo' => $a,
             'Tipo' => $agent->device(),
             'Ip' => $geoIp['ip'],
-            'plataforma' => $agent->platform(),
-            'Direccion' => $result->location->city,
-            'Mapa' => 'https://www.google.com/maps/search/?api=1&query='.$result->location->latitude.','.$result->location->longitude,
-            'Coordenadas' => $result->location->latitude.','.$result->location->longitude,
+            // 'plataforma' => $agent->platform(),
+            // 'Direccion' => $result->location->city,
+            // 'Mapa' => 'https://www.google.com/maps/search/?api=1&query=' . $result->location->latitude . ',' . $result->location->longitude,
+            // 'Coordenadas' => $result->location->latitude . ',' . $result->location->longitude,
         );
 
         $request['device'] = json_encode($device);

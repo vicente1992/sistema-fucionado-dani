@@ -61,11 +61,12 @@
                                     @endif
                                     <td>{{$client->user->province}}</td>
                                     <td>
-                                        @if($client->user->status=='good')
-                                        <span class="badge-info badge">BUENO</span>
-                                        @elseif($client->user->status=='bad')
-                                        <span class="badge-danger badge">MALO</span>
-                                        @endif
+                                        @if($client->days_rest <12 ) <span class="badge-success badge">BUENO</span>
+                                            @elseif($client->days_rest >= 12 && $client->days_rest <30) <span
+                                                class="badge-warning badge">REGULAR</span>
+                                                @elseif($client->days_rest > 30)
+                                                <span class="badge-danger badge">MALO</span>
+                                                @endif
 
                                     </td>
                                     <td>
