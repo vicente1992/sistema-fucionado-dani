@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\db_blacklists;
 use App\db_credit;
 use App\db_not_pay;
+use App\db_pending_pay;
 use App\db_summary;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,32 +20,38 @@ class notPaymentsOfDay extends Controller
      */
     public function index()
     {
-
-
         $data_credit  = db_credit::where('credit.id_agent', Auth::id())
+            ->join('users', 'credit.id_user', '=', 'users.id')
             ->where('credit.status', 'inprogress')
+            ->select(
+                'credit.*',
+                'users.name',
+                'users.last_name',
+                'users.province'
+            )
             ->get();
 
-        // $clients = [];
+        $data_credits = [];
         foreach ($data_credit as $d) {
-            if (db_not_pay::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists()) {
+            if (db_not_pay::where('id_credit', $d->id)->whereDate('not_pay.created_at', '=', Carbon::now()->toDateString())->exists()) {
                 $clients =  db_not_pay::where('id_credit', $d->id)
                     ->whereDate('not_pay.created_at', '=', Carbon::now()->toDateString())
                     ->join('users', 'not_pay.id_user', '=', 'users.id')
+                    ->join('credit', 'not_pay.id_user', '=', 'credit.id_user')
                     ->select(
                         'not_pay.*',
                         'users.name',
                         'users.last_name',
-                        'users.province'
+                        'users.province',
                     )
-                    ->orderBy('not_pay.id_user', 'asc')
+                    ->orderBy('not_pay.created_at', 'asc')
                     ->get();
+
                 $data_credits[] = $this->parse_not_payments($clients);
             }
         }
-
         $data = array(
-            'clients' => $data_credits ?? []
+            'clients' => $data_credits
         );
         return view('not-payments-day.index', $data);
     }
@@ -113,10 +121,12 @@ class notPaymentsOfDay extends Controller
     {
         //
     }
+
     private function parse_not_payments($data_credit)
     {
         $listaFinal = [];
         foreach ($data_credit as $data) {
+
 
             $listaFinal = (object) [
                 "id" => $data->id,

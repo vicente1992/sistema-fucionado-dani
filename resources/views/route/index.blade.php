@@ -64,7 +64,7 @@
                                         @if($client->days_rest <12 ) <span class="badge-success badge">BUENO</span>
                                             @elseif($client->days_rest >= 12 && $client->days_rest <30) <span
                                                 class="badge-warning badge">REGULAR</span>
-                                                @elseif($client->days_rest > 30)
+                                                @elseif($client->days_rest >= 30)
                                                 <span class="badge-danger badge">MALO</span>
                                                 @endif
 

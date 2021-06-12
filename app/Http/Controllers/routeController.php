@@ -54,22 +54,29 @@ class routeController extends Controller
             $d->positive = $tmp_amount;
             $d->payment_quote =  $tmp_quote;
             $d->rest = round(floatval($amount_total - $tmp_amount), 2);
-            $d->payment_done = db_summary::where('id_credit', $d->id)->count();
+            $count_summary = db_summary::where('id_credit', $d->id)->count();
+            $d->payment_done = $count_summary;
             $d->user = User::find($d->id_user);
             $d->amount_total = $amount_total;
             // $d->days_rest = db_not_pay::where('id_credit', $d->id)->count();
-            $d->days_summ =  db_summary::where('id_credit', $d->id)->count();
+            $d->days_summ = $count_summary;
             // $d->days_rest = $dt->diffInDays(Carbon::parse($d->created_at));
             // $d->num_days = $d->created_at->diffInDays($dt);
-            $d->saldo = $d->amount_total - (db_summary::where('id_credit', $d->id)->sum('amount'));
+            $amount_summary = db_summary::where('id_credit', $d->id)->sum('amount');
+            $d->saldo = $d->amount_total - $amount_summary;
             $d->quote = (floatval($d->amount_neto * $d->utility) + floatval($d->amount_neto)) / floatval($d->payment_number);
             $d->setAttribute('last_pay', db_summary::where('id_credit', $d->id)->orderBy('id', 'desc')->first());
 
             $days_crea = $d->created_at->diffInDaysFiltered(function (Carbon $date) {
                 return !$date->isSunday();
             }, $dt);
-            // $d->days_crea = $days_crea;
-            $d->days_rest = $days_crea - db_summary::where('id_credit', $d->id)->count() - 1;
+            $d->days_crea = $days_crea;
+
+            $pay_res = (floatval($days_crea * $d->quote)  -  $amount_summary);
+
+            $days_rest = floatval($pay_res / $d->quote - 1);
+            $d->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
+            // $d->days_rest = $days_crea - db_summary::where('id_credit', $d->id)->count() - 1;
 
             if (!db_summary::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists()) {
 
@@ -103,6 +110,13 @@ class routeController extends Controller
                 }
             }
         }
+        // $numero_1 = abs(78);
+        // $numero_2 = abs(-78);
+        // echo "$numero_1 <br />";
+        // echo "$numero_2";
+        // return
+
+        // dd($data_filter);
         $data_all = array(
             'clients' => $data_filter,
             'pending' => $data_filter_pending
