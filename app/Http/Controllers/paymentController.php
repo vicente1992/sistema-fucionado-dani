@@ -55,6 +55,17 @@ class paymentController extends Controller
                     ->where('id_agent', Auth::id())
                     ->sum('amount')));
                 $data->setAttribute('payment_current', db_summary::where('id_credit', $data->id)->count());
+
+                // Coutas atrasads
+                $amount_summary = db_summary::where('id_credit', $data->id)->sum('amount');
+                $days_crea = count_date($data->created_at);
+                $data->total = floatval($data->utility_amount + $data->amount_neto);
+                $data->days_crea = $days_crea;
+                $quote = $data->total  / floatval($data->payment_number);
+                $quote = $data->total  / floatval($data->payment_number);
+                $pay_res = (floatval($days_crea * $quote)  -  $amount_summary);
+                $days_rest = floatval($pay_res / $quote - 1);
+                $data->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
             }
         }
         $data = array(
@@ -180,11 +191,11 @@ class paymentController extends Controller
     public function edit(Request $request, $id)
     {
         $id_credit = $request->id_credit;
-//        dd(array(
-//            'id_credit' => $request->id_credit,
-//            'id_user' => $id,
-//            'ajax' => $request->ajax
-//        ));
+        //        dd(array(
+        //            'id_credit' => $request->id_credit,
+        //            'id_user' => $id,
+        //            'ajax' => $request->ajax
+        //        ));
         if (!isset($id_credit)) {
             return 'ID cretido';
         };
@@ -205,7 +216,7 @@ class paymentController extends Controller
                 'created_at' => Carbon::now(),
                 'id_credit' => $id_credit,
                 'id_user' => $id,
-                'user' => $user_audit->name.' '.$user_audit->last_name
+                'user' => $user_audit->name . ' ' . $user_audit->last_name
             )),
             'event' => 'create',
             'device' => $request->device,
