@@ -66,10 +66,8 @@ class routeController extends Controller
             $d->saldo = $d->amount_total - $amount_summary;
             $d->quote = (floatval($d->amount_neto * $d->utility) + floatval($d->amount_neto)) / floatval($d->payment_number);
             $d->setAttribute('last_pay', db_summary::where('id_credit', $d->id)->orderBy('id', 'desc')->first());
-
-            $days_crea = $d->created_at->diffInDaysFiltered(function (Carbon $date) {
-                return !$date->isSunday();
-            }, $dt);
+            
+            $days_crea = count_date($d->created_at);
             $d->days_crea = $days_crea;
 
             $pay_res = (floatval($days_crea * $d->quote)  -  $amount_summary);
@@ -110,13 +108,6 @@ class routeController extends Controller
                 }
             }
         }
-        // $numero_1 = abs(78);
-        // $numero_2 = abs(-78);
-        // echo "$numero_1 <br />";
-        // echo "$numero_2";
-        // return
-
-        // dd($data_filter);
         $data_all = array(
             'clients' => $data_filter,
             'pending' => $data_filter_pending
