@@ -38,6 +38,7 @@ Route::middleware(['auth', 'device'])->group(function () {
     Route::resource('bill', 'billController')->middleware('close');
     Route::resource('not-pay', 'NotPaymentController')->middleware('auth');
     Route::resource('not-pay-day', 'notPaymentsOfDay')->middleware('auth');
+    Route::resource('beaten', 'BeatenCreditController')->middleware('auth');
     Route::resource('order-route', 'OrderRouteController')->middleware('auth');
     Route::get('export', 'NotPaymentController@export')->middleware('auth');
 });
@@ -55,6 +56,7 @@ Route::prefix('supervisor')->middleware(['device'])->group(function () {
     Route::resource('graph', 'graphController');
     Route::resource('summary', 'supervisorSummaryController');
     Route::resource('daily-report', 'dailyReportController');
+    Route::resource('review-beaten', 'SubBeatenController');
 
     /*-----Sub Menu-----*/
     Route::prefix('menu')->middleware(['auth'])->group(function () {

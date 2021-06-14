@@ -44,6 +44,7 @@ class summaryController extends Controller
             $sql[] = ['id_credit', '=', $id_credit];
         }
         $data_credit = db_credit::find($id_credit);
+
         $tmp = db_summary::where($sql)->get();
         $amount = floatval(db_credit::find($id_credit)->amount_neto) + floatval(db_credit::find($id_credit)->amount_neto * db_credit::find($id_credit)->utility);
         foreach ($tmp as $t) {
@@ -59,10 +60,19 @@ class summaryController extends Controller
         if (db_summary::where($sql)->exists()) {
             $amount_last = db_summary::where($sql)->orderBy('id', 'desc')->first()->amount;
         }
+        $amount_summary = db_summary::where($sql)->sum('amount');
         $last = array(
             'recent' => $amount_last,
-            'rest' => ($data_credit->total) - (db_summary::where($sql)->sum('amount'))
+            'rest' => ($data_credit->total) - ($amount_summary)
         );
+
+        //Coutas atrasadas
+        $days_crea = count_date($data_credit->created_at);
+        $data_credit->days_crea = $days_crea;
+        $quote = $data_credit->total  / floatval($data_credit->payment_number);
+        $pay_res = (floatval($days_crea * $quote)  -  $amount_summary);
+        $days_rest = floatval($pay_res / $quote - 1);
+        $data_credit->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
 
         $data = array(
             'clients' => $tmp,
@@ -99,7 +109,8 @@ class summaryController extends Controller
         $revision = $request->rev;
         if (!isset($revision)) {
             if (db_summary::whereDate('created_at', Carbon::now()->toDateString())
-                ->where('id_credit', $id_credit)->exists()) {
+                ->where('id_credit', $id_credit)->exists()
+            ) {
                 $response = array(
                     'status' => 'fail',
                     'msj' => 'Ya existe un pago hoy',
@@ -140,7 +151,8 @@ class summaryController extends Controller
                 'credit.payment_number as credit_payment_number',
                 'credit.utility as credit_utility',
                 'credit.status as credit_status',
-                'users.name as user_name')
+                'users.name as user_name'
+            )
             ->first();
         $credit['amount'] = $amount;
         $credit['id_credit'] = $id_credit;
@@ -159,7 +171,7 @@ class summaryController extends Controller
         db_audit::insert($audit);
 
         $sum = db_summary::where('id_credit', $id_credit)->sum('amount');
-//        dd($sum);
+        //        dd($sum);
         if ($sum >= (db_credit::find($id_credit)->amount_neto) + (db_credit::find($id_credit)->amount_neto * db_credit::find($id_credit)->utility)) {
             db_credit::where('id', $id_credit)->update(['status' => 'close']);
         }
@@ -203,8 +215,6 @@ class summaryController extends Controller
      */
     public function show(Request $request, $id)
     {
-
-
     }
 
     /**
@@ -215,7 +225,6 @@ class summaryController extends Controller
      */
     public function edit($id)
     {
-
     }
 
     /**

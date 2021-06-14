@@ -36,25 +36,38 @@ class carteraController extends Controller
 
         $data_user = db_credit::where('credit.id_agent', Auth::id())
             ->join('users', 'credit.id_user', '=', 'users.id')
-            ->select('credit.*', 'users.id as id_user',
-                'users.name', 'users.last_name'
+            ->select(
+                'credit.*',
+                'users.id as id_user',
+                'users.name',
+                'users.last_name'
             )
             ->get();
-      $suma = 0;
+        $suma = 0;
         foreach ($data_user as $data) {
             if (db_credit::where('id_user', $data->id_user)->where('id_agent', Auth::id())->exists()) {
-                $suma+=  $data->amount_neto + $data->amount_neto * $data->utility  - (db_summary::where('id_credit', $data->id)
-                        ->where('id_agent', Auth::id())
-                        ->sum('amount'));
+                $suma +=  $data->amount_neto + $data->amount_neto * $data->utility  - (db_summary::where('id_credit', $data->id)
+                    ->where('id_agent', Auth::id())
+                    ->sum('amount'));
                 $data->setAttribute('credit_id', $data->id);
                 $data->setAttribute('amount_neto', ($data->amount_neto) + ($data->amount_neto * $data->utility));
                 $data->setAttribute('positive', $data->amount_neto - (db_summary::where('id_credit', $data->id)
-                        ->where('id_agent', Auth::id())
-                        ->sum('amount')));
+                    ->where('id_agent', Auth::id())
+                    ->sum('amount')));
                 $data->setAttribute('payment_current', db_summary::where('id_credit', $data->id)->count());
+                // Coutas atrasads
+                $data->total = floatval($data->utility_amount + $data->amount_neto);
+                $amount_summary = db_summary::where('id_credit', $data->id)->sum('amount');
+                $days_crea = count_date($data->created_at);
+                $data->days_crea = $days_crea;
+                $quote = $data->total  / floatval($data->payment_number);
+                $quote = $data->total  / floatval($data->payment_number);
+                $pay_res = (floatval($days_crea * $quote)  -  $amount_summary);
+                $days_rest = floatval($pay_res / $quote - 1);
+                $data->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
             }
-
         }
+        // dd($data_user);
         $data = array(
             'clients' => $data_user,
             'suma' => $suma
@@ -70,7 +83,6 @@ class carteraController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -112,7 +124,7 @@ class carteraController extends Controller
                 'created_at' => Carbon::now(),
                 'amount' => $amount,
                 'id_agent' => Auth::id(),
-                'agent' => $user_audit->name.' '.$user_audit->last_name,
+                'agent' => $user_audit->name . ' ' . $user_audit->last_name,
                 'id_credit' => $credit_id,
             )),
             'event' => 'create',
@@ -122,7 +134,6 @@ class carteraController extends Controller
         db_audit::insert($audit);
 
         return redirect('');
-
     }
 
     /**
@@ -152,7 +163,7 @@ class carteraController extends Controller
         $data->amount_neto = $amount_neto;
 
 
-//        dd([$amount_neto,$tmp_amount]);
+        //        dd([$amount_neto,$tmp_amount]);
 
         $tmp_quote = round(floatval(($amount_neto / $data->payment_number)), 2);
         $tmp_rest = round(floatval($amount_neto - $tmp_amount), 2);
@@ -162,7 +173,7 @@ class carteraController extends Controller
             'rest' => round(floatval($amount_neto - $tmp_amount), 2),
             'payment_done' => db_summary::where('id_credit', $id)->count(),
             'payment_quote' => ($tmp_rest > $tmp_quote) ? $tmp_rest : $tmp_quote
-    );
+        );
 
 
         if ($request->input('format') === 'json') {
@@ -175,7 +186,6 @@ class carteraController extends Controller
         } else {
             return view('cartera.create', $data);
         }
-
     }
 
     /**
@@ -208,7 +218,6 @@ class carteraController extends Controller
         } else {
             return redirect('route');
         }
-
     }
 
     /**
