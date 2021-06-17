@@ -47,7 +47,6 @@
                     <th>Tipo de negocio</th>
                   </tr>
                 </thead>
-                <h4 class="m-b-lg">Clientes Pendientes</h4>
                 <tbody>
                   @foreach($clients as $client)
                   <tr>
