@@ -57,6 +57,7 @@ Route::prefix('supervisor')->middleware(['device'])->group(function () {
     Route::resource('summary', 'supervisorSummaryController');
     Route::resource('daily-report', 'dailyReportController');
     Route::resource('review-beaten', 'SubBeatenController');
+    Route::resource('client-review', 'ClientReviewController');
 
     /*-----Sub Menu-----*/
     Route::prefix('menu')->middleware(['auth'])->group(function () {
