@@ -29,22 +29,27 @@ class ClientReviewController extends Controller
      */
     public function create()
     {
+
+
         $user_current = Auth::user();
-        $ormSqlWallet = db_supervisor_has_agent::join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
-            ->join('users', 'agent_has_supervisor.id_user_agent', '=', 'users.id')
-            ->select('wallet.*', 'users.name as user_name', 'users.id as user_id');
-
+        $sql = [];
         if ($user_current->level !== 'admin') {
-            $ormSqlWallet = $ormSqlWallet->where('agent_has_supervisor.id_supervisor', Auth::id());
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
         }
-
-        $data = array(
-            'wallet' => $ormSqlWallet->get(),
-            'agents' => db_supervisor_has_agent::where('id_supervisor', Auth::id())
-                ->join('users', 'id_user_agent', '=', 'users.id')->get(),
-
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
+            ->select(
+                'users.*',
+                'wallet.name as wallet_name'
+            )
+            ->get();
+        $data_all = array(
+            'agents' => $data
         );
-        return view('supervisor_clients_review.create', $data);
+        return view('supervisor_clients_review.create', $data_all);
     }
 
     /**
