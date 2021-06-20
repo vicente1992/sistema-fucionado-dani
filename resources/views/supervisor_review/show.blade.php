@@ -70,6 +70,7 @@
                     </a>
 
                 </div>
+                @if (in_array(Auth::user()->level,['admin']))
                 <div class="col-md-3 col-sm-6">
                     <a href="{{url('supervisor/review/')}}/{{$id}}">
                         <div class="widget stats-widget">
@@ -82,6 +83,7 @@
                         </div><!-- .widget -->
                     </a>
                 </div>
+                @endif
                 <div class="col-md-3 col-sm-6">
                     <a href="{{url('supervisor/menu/report')}}/{{$id}}">
                         <div class="widget stats-widget">

@@ -28,12 +28,13 @@ class auditController extends Controller
         }
 
         $data = db_audit::where($sql)
-        ->join('users', 'audit.id_user', '=', 'users.id')
-        ->select('audit.*', 'users.name as user_name',
-            'users.last_name as user_last_name',
-            'users.level as user_level'
-        )->orderBy('created_at','DESC')->get();
-
+            ->join('users', 'audit.id_user', '=', 'users.id')
+            ->select(
+                'audit.*',
+                'users.name as user_name',
+                'users.last_name as user_last_name',
+                'users.level as user_level'
+            )->orderBy('created_at', 'DESC')->get();
         $data = array(
             'audits' => $data
         );

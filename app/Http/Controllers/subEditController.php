@@ -87,7 +87,8 @@ class subEditController extends Controller
                 'credit.id as credit_id',
                 'credit.payment_number'
             )
-            ->get();  
+            ->orderBy('credit.created_at', 'asc')
+            ->get();
 
         $data_summary = db_supervisor_has_agent::where('id_wallet', $id)
             ->join('summary', 'agent_has_supervisor.id_user_agent', '=', 'summary.id_agent')
@@ -107,6 +108,7 @@ class subEditController extends Controller
                 'summary.created_at',
                 'summary.id as id_summary'
             )
+            ->orderBy('summary.created_at', 'asc')
             ->get();
 
         foreach ($data_summary as $datum) {
@@ -120,6 +122,7 @@ class subEditController extends Controller
                 'bills.*',
                 'list_bill.name as type_bill'
             )
+            ->orderBy('bills.created_at', 'asc')
             ->get();
 
         $data = array(

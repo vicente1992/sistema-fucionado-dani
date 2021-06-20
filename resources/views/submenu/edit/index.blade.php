@@ -12,7 +12,6 @@
 
                         <div class="d-none d-lg-block d-xl-block">
                             <table class="table supervisor-editC-table">
-
                                 <thead>
                                     <tr>
                                         <th>Nombres</th>

@@ -29,7 +29,6 @@ class transactionController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -42,29 +41,33 @@ class transactionController extends Controller
     {
         $date = $request->date_start;
 
-        if(!isset($date)){return 'Fecha Vacia';};
+        if (!isset($date)) {
+            return 'Fecha Vacia';
+        };
 
-        $data_summary = db_summary::whereDate('summary.created_at',Carbon::createFromFormat('d/m/Y',$date)->toDateString())
-            ->where('credit.id_agent',Auth::id())
-            ->join('credit','summary.id_credit','=','credit.id')
-            ->join('users','credit.id_user','=','users.id')
+        $data_summary = db_summary::whereDate('summary.created_at', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
+            ->where('credit.id_agent', Auth::id())
+            ->join('credit', 'summary.id_credit', '=', 'credit.id')
+            ->join('users', 'credit.id_user', '=', 'users.id')
+            ->orderBy('summary.created_at', 'asc')
             ->select(
+                'summary.created_at',
+                'summary.number_index',
+                'summary.amount',
                 'users.name',
                 'users.last_name',
                 'credit.payment_number',
                 'credit.utility',
                 'credit.amount_neto',
                 'credit.id as id_credit',
-                'summary.number_index',
-                'summary.amount',
-                'summary.created_at'
-                )
+            )
             ->groupBy('summary.id')
             ->get();
 
-        $data_credit = db_credit::whereDate('credit.created_at',Carbon::createFromFormat('d/m/Y',$date)->toDateString())
-            ->where('credit.id_agent',Auth::id())
-            ->join('users','credit.id_user','=','users.id')
+        $data_credit = db_credit::whereDate('credit.created_at', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
+            ->where('credit.id_agent', Auth::id())
+            ->join('users', 'credit.id_user', '=', 'users.id')
+            ->orderBy('credit.created_at', 'asc')
             ->select(
                 'credit.id as credit_id',
                 'users.id',
@@ -74,27 +77,26 @@ class transactionController extends Controller
                 'credit.created_at',
                 'credit.utility',
                 'credit.payment_number',
-                'credit.amount_neto')
+                'credit.amount_neto'
+            )
             ->get();
 
-
-        $data_bill = db_bills::whereDate('created_at',Carbon::createFromFormat('d/m/Y',$date)->toDateString())
+        $data_bill = db_bills::whereDate('created_at', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
             ->join('list_bill', 'bills.type', '=', 'list_bill.id')
             ->whereDate('created_at', '<=', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
-            ->where('id_agent',Auth::id())
+            ->where('id_agent', Auth::id())
             ->select(
                 'bills.*',
                 'list_bill.name as type_bill'
             )
             ->get();
 
-        foreach ($data_summary as $d){
-            $total = db_summary::where('id_credit',$d->id_credit)->sum('amount');
-            $total_credit = db_credit::where('id',$d->id_credit)->sum('amount_neto');
-            $total_credit = $total_credit+($total_credit*$d->utility);
-            $total = $total_credit-$total;
-
-            $d->setAttribute('total_payment',$total);
+        foreach ($data_summary as $d) {
+            $total = db_summary::where('id_credit', $d->id_credit)->sum('amount');
+            $total_credit = db_credit::where('id', $d->id_credit)->sum('amount_neto');
+            $total_credit = $total_credit + ($total_credit * $d->utility);
+            $total = $total_credit - $total;
+            $d->setAttribute('total_payment', $total);
         }
 
         $total_summary = $data_summary->sum('amount');
@@ -110,7 +112,7 @@ class transactionController extends Controller
             'total_credit' => $total_credit,
         );
 
-        return view('transaction.index',$data);
+        return view('transaction.index', $data);
     }
 
     /**
