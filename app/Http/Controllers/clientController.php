@@ -6,6 +6,7 @@ use App\db_agent_has_user;
 use App\db_audit;
 use App\db_countries;
 use App\db_credit;
+use App\db_summary;
 use App\db_supervisor_has_agent;
 use App\db_wallet;
 use App\User;
@@ -23,11 +24,27 @@ class clientController extends Controller
      */
     public function index()
     {
+
+        $user_current = Auth::user();
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
+            ->select(
+                'users.*',
+                'wallet.name as wallet_name'
+            )
+            ->get();
         $data = array(
-            'wallet' => db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', Auth::id())
+            'wallet' => db_supervisor_has_agent::where($sql)
                 ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
                 ->get(),
-            'agents' => db_supervisor_has_agent::where('id_supervisor', Auth::id())
+            'agents' => db_supervisor_has_agent::where($sql)
                 ->join('users', 'id_user_agent', '=', 'users.id')->get(),
             'countries' => db_countries::all(),
         );
@@ -55,6 +72,7 @@ class clientController extends Controller
         $id_wallet = $request->wallet;
         $id_agent = $request->agent;
         $country = $request->country;
+        $user_current = Auth::user();
 
         if (!isset($id_wallet)) {
             return 'ID wallet vacio';
@@ -65,18 +83,63 @@ class clientController extends Controller
         if (!isset($country)) {
             return 'Pais vacio';
         };
-
-        db_supervisor_has_agent::where('id_user_agent', $id_agent)->where('id_supervisor', Auth::id())
-            ->update(['id_wallet' => $id_wallet]);
+        if ($user_current->level !== 'admin') {
+            $id_supervisor = Auth::id();
+            db_supervisor_has_agent::where('id_user_agent', $id_agent)->where('id_supervisor', $id_supervisor)
+                ->update(['id_wallet' => $id_wallet]);
+        }
 
         $audit = array(
             'created_at' => Carbon::now(),
-            'id_user' => Auth::id(),
+            'id_user' => $id_supervisor ?? Auth::id(),
             'data' => json_encode(['id_wallet' => $id_wallet]),
             'event' => 'update',
             'type' => 'Cliente'
         );
         db_audit::insert($audit);
+
+        $data_credit = db_credit::where('credit.id_agent', $id_agent)
+            ->join('users', 'credit.id_user', '=', 'users.id')
+            ->where('credit.status', 'inprogress')
+            ->select('credit.*')
+            ->orderBy('credit.order_list', 'asc')
+            ->get();
+        foreach ($data_credit as $k => $d) {
+            $tmp_amount = db_summary::where('id_credit', $d->id)
+                ->where('id_agent', $id_agent)
+                ->sum('amount');
+            $amount_total = ($d->amount_neto) + ($d->amount_neto * $d->utility);
+            $tmp_quote = round(floatval(($amount_total / $d->payment_number)), 2);
+            $d->positive = $tmp_amount;
+            $d->payment_quote =  $tmp_quote;
+            $d->rest = round(floatval($amount_total - $tmp_amount), 2);
+            $count_summary = db_summary::where('id_credit', $d->id)->count();
+            $d->payment_done = $count_summary;
+            $d->user = User::find($d->id_user);
+            $d->amount_total = $amount_total;
+
+            $d->days_summ = $count_summary;
+
+            $amount_summary = db_summary::where('id_credit', $d->id)->sum('amount');
+            $d->saldo = $d->amount_total - $amount_summary;
+            $d->quote = (floatval($d->amount_neto * $d->utility) + floatval($d->amount_neto)) / floatval($d->payment_number);
+            $d->setAttribute('last_pay', db_summary::where('id_credit', $d->id)->orderBy('id', 'desc')->first());
+
+            $days_crea = count_date($d->created_at);
+            $d->days_crea = $days_crea;
+            $pay_res = (floatval($days_crea * $d->quote)  -  $amount_summary);
+            $days_rest = floatval($pay_res / $d->quote - 1);
+            $d->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
+
+            $d->credit_inprogress = db_credit::where('status', 'inprogress')->where('id_user', $d->id_user)->count();
+            $d->credit_close = db_credit::where('status', 'close')->where('id_user', $d->id_user)->count();
+            $d->total_credit = $d->credit_inprogress + $d->credit_close;
+        }
+        $data = array(
+            'clients' => $data_credit
+        );
+
+        return view('supervisor_client.index', $data);
     }
 
     /**
@@ -171,7 +234,6 @@ class clientController extends Controller
         } else {
             return redirect('supervisor/client/');
         }
-
     }
 
     /**
@@ -184,6 +246,4 @@ class clientController extends Controller
     {
         //
     }
-
-
 }

@@ -56,8 +56,8 @@ class subCloseController extends Controller
 
         $id_wallet = $id;
         $date = $request->date_start;
-
-        $base_raw = db_close_day::where('id_supervisor', Auth::id())
+        $data_agent = db_supervisor_has_agent::where('id_wallet', $id_wallet)->first();
+        $base_raw = db_close_day::where('id_supervisor', $data_agent->id_supervisor)
             ->whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date))
             ->first();
 
@@ -71,12 +71,9 @@ class subCloseController extends Controller
             return 'No existe agente con esta ruta';
         }
 
-        $data_agent = db_supervisor_has_agent::where('id_wallet', $id_wallet)->first();
         if (!isset($id_wallet)) {
             return 'ID wallet vacio';
         };
-
-
 
         $today_amount = db_summary::whereDate('created_at', Carbon::createFromFormat('d/m/Y', $date)
             ->toDateString())
@@ -96,7 +93,8 @@ class subCloseController extends Controller
         $base_amount = false;
         if (db_close_day::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
             ->where('id_supervisor', Auth::id())
-            ->exists()) {
+            ->exists()
+        ) {
             $base_amount = db_close_day::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date)->toDateString())->first()->base_before;
         }
 

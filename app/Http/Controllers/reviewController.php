@@ -31,15 +31,25 @@ class reviewController extends Controller
         $ormSqlWallet = db_supervisor_has_agent::join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->join('users', 'agent_has_supervisor.id_user_agent', '=', 'users.id')
             ->select('wallet.*', 'users.name as user_name', 'users.id as user_id');
-
-        if($user_current->level !== 'admin'){
+        $sql = [];
+        if ($user_current->level !== 'admin') {
             $ormSqlWallet = $ormSqlWallet->where('agent_has_supervisor.id_supervisor', Auth::id());
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
         }
+        $agents = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
+            ->select(
+                'users.*',
+                'wallet.name as wallet_name'
+            )
+            ->get();
 
         $data = array(
             'wallet' => $ormSqlWallet->get(),
-            'agents' => db_supervisor_has_agent::where('id_supervisor', Auth::id())
-                ->join('users', 'id_user_agent', '=', 'users.id')->get(),
+            'agents' => $agents,
             'countries' => db_countries::all(),
         );
         return view('supervisor_review.create', $data);

@@ -101,6 +101,30 @@
         </div><!-- .widget -->
     </a>
 </div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/client')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-purple">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Editar Cliente</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-edit"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/review/create')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-deepOrange">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Revision Cobros</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-eye"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
 @endsection
 
 @section('agent-section')
@@ -280,8 +304,8 @@
             </div>
         </div><!-- .widget -->
     </a>
-
 </div>
+
 
 @endsection
 
@@ -363,7 +387,6 @@
             </div>
         </div><!-- .widget -->
     </a>
-
 </div>
 <div class="col-md-3 col-sm-6">
     <a href="{{url('supervisor/statistics')}}">
