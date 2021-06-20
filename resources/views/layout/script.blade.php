@@ -44,6 +44,7 @@
     $('table').DataTable(
         {
             "pageLength": 50,
+            // "ordering": false
             "language": {
                 "lengthMenu": "",
                 "zeroRecords": "No hay registros",
@@ -57,8 +58,9 @@
                     "next": "Siguiente",
                     "previous": "Anterior"
                 },
-                "order": [[1, "asc"]]
+                // "order": [[1, "asc"]]
             },
+            "ordering": false,
             "paging": change ? false: true,
             "searching": change ? false: true
         }
