@@ -3,7 +3,7 @@ function graphics(data, labels, label, id) {
     const myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: [labels[0]+' \t\t•\t\t '+labels[1]],
+            labels: [labels[0] + ' \t\t•\t\t ' + labels[1]],
             datasets: [
                 {
                     label: 'Semana pasada',
@@ -40,7 +40,7 @@ function graphics(data, labels, label, id) {
             },
             animation: {
                 duration: 1,
-                onComplete: function() {
+                onComplete: function () {
                     const chartInstance = this.chart,
                         ctx = chartInstance.ctx;
 
@@ -48,9 +48,9 @@ function graphics(data, labels, label, id) {
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'bottom';
 
-                    this.data.datasets.forEach(function(dataset, i) {
+                    this.data.datasets.forEach(function (dataset, i) {
                         const meta = chartInstance.controller.getDatasetMeta(i);
-                        meta.data.forEach(function(bar, index) {
+                        meta.data.forEach(function (bar, index) {
                             const data = dataset.data[index];
                             ctx.fillText(data, bar._model.x, bar._model.y - 5);
                         });
@@ -132,7 +132,7 @@ function graphicsDays(data, labels, total, label, id) {
     const options = {
         title: {
             display: true,
-            text: label+': \t Totales = Semana pasada: '+total.lastWeek+' - Semana elegida: '+total.thisWeek
+            text: label + ': \t Totales = Semana pasada: ' + total.lastWeek + ' - Semana elegida: ' + total.thisWeek
         },
         showTooltips: false,
         hover: {
@@ -140,7 +140,7 @@ function graphicsDays(data, labels, total, label, id) {
         },
         animation: {
             duration: 1,
-            onComplete: function() {
+            onComplete: function () {
                 const chartInstance = this.chart,
                     ctx = chartInstance.ctx;
 
@@ -148,9 +148,9 @@ function graphicsDays(data, labels, total, label, id) {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'bottom';
 
-                this.data.datasets.forEach(function(dataset, i) {
+                this.data.datasets.forEach(function (dataset, i) {
                     const meta = chartInstance.controller.getDatasetMeta(i);
-                    meta.data.forEach(function(bar, index) {
+                    meta.data.forEach(function (bar, index) {
                         const data = dataset.data[index];
                         ctx.fillText(data, bar._model.x, bar._model.y - 5);
                     });

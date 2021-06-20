@@ -22,6 +22,8 @@ class subHistoryController extends Controller
      */
     public function index(Request $request)
     {
+
+        $user_current = Auth::user();
         if (!isset($request->id_wallet)) {
             return 'No existe ID Wallet';
         }
@@ -29,7 +31,14 @@ class subHistoryController extends Controller
             ->join('users', 'id_client', '=', 'users.id')
             ->get();
 
-        $data = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', Auth::id())
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+
+        $data = db_supervisor_has_agent::where($sql)
             ->where('agent_has_supervisor.id_wallet', $request->id_wallet)
             ->join('credit', 'agent_has_supervisor.id_user_agent', '=', 'credit.id_agent')
             ->join('users', 'credit.id_user', '=', 'users.id')
@@ -84,7 +93,7 @@ class subHistoryController extends Controller
                 ->count();
         }
 
-        $data_wallet = db_supervisor_has_agent::where('id_supervisor', Auth::id())
+        $data_wallet = db_supervisor_has_agent::where($sql)
             ->where('agent_has_supervisor.id_wallet', $request->id_wallet)
             ->first();
         $total_summary = db_summary::where('id_agent', $data_wallet->id_user_agent)->sum('amount');

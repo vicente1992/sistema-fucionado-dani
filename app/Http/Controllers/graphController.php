@@ -20,10 +20,14 @@ class graphController extends Controller
      */
     public function index(Request $request)
     {
+
         $type = $request->type;
         $response = array(
-            'data' => []
+            'data' => [],
         );
+        $data = $this->getAgents();
+        // dd(array_merge($data, $response));
+        // return view('graph.show', array_merge($data, $response));
         switch ($type) {
             case 'overdraft':
                 $data = $this->getAgents();
@@ -126,7 +130,6 @@ class graphController extends Controller
             $lastWeekendSql[] = ['created_at', '<=', end($datesLastWeek)->hour(22)->minute(32)->second(5)->microsecond(123456)->toDateTimeString()];
             $lastWeekendSql[] = ['id_agent', $agent];
         }
-
         switch ($type) {
             case 'overdraft':
                 $dataGraph = $this->overdraft($datesThisWeek, $datesLastWeek, $agent, $thisWeekendSql, $lastWeekendSql);

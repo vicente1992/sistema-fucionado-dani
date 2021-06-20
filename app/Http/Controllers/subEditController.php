@@ -53,15 +53,22 @@ class subEditController extends Controller
     {
         $date_start = $request->date_start;
         $date_end = $request->date_end;
+        $user_current = Auth::user();
 
         if (!isset($date_start)) {
             return 'Fecha Inicio Vacia';
         };
 
-        $data_wallet = db_supervisor_has_agent::where('id_wallet', $id)
-            ->where('id_supervisor', Auth::id())
-            ->get();
 
+        $sql = array(
+            ['id_supervisor', '=', Auth::id()]
+        );
+        if ($user_current->level === 'admin') {
+            $sql = [];
+        }
+        $data_wallet = db_supervisor_has_agent::where('id_wallet', $id)
+            ->where($sql)
+            ->get();
         if ($data_wallet->count() === 0) {
             return 'No estas autorizado para realizar esta operación';
         };
@@ -80,10 +87,7 @@ class subEditController extends Controller
                 'credit.id as credit_id',
                 'credit.payment_number'
             )
-            ->get();
-
-        // dd($data_credit);
-
+            ->get();  
 
         $data_summary = db_supervisor_has_agent::where('id_wallet', $id)
             ->join('summary', 'agent_has_supervisor.id_user_agent', '=', 'summary.id_agent')
