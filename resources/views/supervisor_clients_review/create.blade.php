@@ -16,11 +16,7 @@
                   <label for="agent"> Cobrador:</label>
                   <select name="agent" class="form-control" id="agent">
                     @foreach($agents as $a)
-<<<<<<< Updated upstream
-                    <option value="{{$a->id}}">{{$a->name}} {{$a->last_name}}</option>
-=======
                     <option value="{{$a->id}}">{{$a->name}} {{$a->last_name}} - {{$a->wallet_name}} ({{$a->address}})</option>
->>>>>>> Stashed changes
                     @endforeach
                   </select>
                 </div>

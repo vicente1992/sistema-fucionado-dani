@@ -96,11 +96,7 @@
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Reporte Clientes</h3>
                 </div>
-<<<<<<< Updated upstream
-                <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
-=======
                 <span class="pull-right big-icon watermark"><i class="fa fa-male"></i></span>
->>>>>>> Stashed changes
             </div>
         </div><!-- .widget -->
     </a>
