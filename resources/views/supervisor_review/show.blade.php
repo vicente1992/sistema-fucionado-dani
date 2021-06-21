@@ -72,7 +72,11 @@
                 </div>
                 @if (in_array(Auth::user()->level,['admin']))
                 <div class="col-md-3 col-sm-6">
+<<<<<<< Updated upstream
                     <a href="{{url('supervisor/review/')}}/{{$id}}">
+=======
+                    <a href="{{url('supervisor/menu/edit/create')}}?id_wallet={{$id}}">
+>>>>>>> Stashed changes
                         <div class="widget stats-widget">
                             <div class="widget-body clearfix bg-danger">
                                 <div class="pull-left">

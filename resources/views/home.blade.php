@@ -21,7 +21,7 @@
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Movimiento de personal</h3>
                 </div>
-                <span class="pull-right big-icon watermark"><i class="fa fa-list-ol"></i></span>
+                <span class="pull-right big-icon watermark"><i class="fa fa-calendar"></i></span>
             </div>
         </div><!-- .widget -->
     </a>
@@ -48,7 +48,7 @@
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Listar usuarios</h3>
                 </div>
-                <span class="pull-right big-icon watermark"><i class="fa fa-list-ol"></i></span>
+                <span class="pull-right big-icon watermark"><i class="fa fa-search-plus"></i></span>
             </div>
         </div><!-- .widget -->
     </a>
@@ -60,7 +60,7 @@
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Graficas</h3>
                 </div>
-                <span class="pull-right big-icon watermark"><i class="fa fa-signal"></i></span>
+                <span class="pull-right big-icon watermark"><i class="fa fa-bar-chart"></i></span>
             </div>
         </div><!-- .widget -->
     </a>
@@ -72,7 +72,7 @@
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Reporte diario</h3>
                 </div>
-                <span class="pull-right big-icon watermark"><i class="fa fa-bars"></i></span>
+                <span class="pull-right big-icon watermark"><i class="fa fa-check-square-o"></i></span>
             </div>
         </div><!-- .widget -->
     </a>
@@ -96,7 +96,11 @@
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Reporte Clientes</h3>
                 </div>
+<<<<<<< Updated upstream
                 <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
+=======
+                <span class="pull-right big-icon watermark"><i class="fa fa-male"></i></span>
+>>>>>>> Stashed changes
             </div>
         </div><!-- .widget -->
     </a>
@@ -122,9 +126,37 @@
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-eye"></i></span>
             </div>
+<<<<<<< Updated upstream
         </div><!-- .widget -->
     </a>
+=======
+</div><!-- .widget -->
+    </a>
+
+>>>>>>> Stashed changes
 </div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/tracker')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-success">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Rastro Cobrador</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-search"></i></span>
+            </div>
+</div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/statistics')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-danger">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Estadistica</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-line-chart"></i></span>
+            </div>
+        </div><!-- .widget -->
 @endsection
 
 @section('agent-section')

@@ -25,17 +25,10 @@
                                         <select name="wallet" class="form-control" id="wallet">
                                             <option selected>Selecionar ....</option>
                                             @foreach($wallet as $w)
-                                                <option value="{{$w->id}}">{{$w->name}} ({{$w->user_name}})</option>
+                                                <option value="{{$w->id}}">{{$w->name}} ({{$w->user_name}}) ({{$w->address}}) </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group hidden">
-                                        <label for="agent"> Cobrador:</label>
-                                        <select name="agent" class="form-control" id="agent">
-                                            @foreach($agents as $a)
-                                                <option value="{{$a->id}}">{{$a->name}} {{$a->last_name}}</option>
-                                            @endforeach
-                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <a id="link_client_audit" class="btn btn-success btn-block" disabled href="{{url('supervisor/review')}}">Consultar</a>

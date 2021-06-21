@@ -17,7 +17,11 @@
                                     @foreach($clients as $client)
                                     <option value="{{$client->id}}">
                                         {{$client->name}} {{$client->last_name}}
+<<<<<<< Updated upstream
                                         - {{$client->wallet_name}}
+=======
+                                        - {{$client->wallet_name}} ({{$client->address}})
+>>>>>>> Stashed changes
                                     </option>
                                     @endforeach
 

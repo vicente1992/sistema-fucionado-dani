@@ -17,7 +17,7 @@
                                         @foreach($clients as $client)
                                             <option value="{{$client->id}}">
                                                 {{$client->name}} {{$client->last_name}}
-                                                - {{$client->wallet_name}}
+                                                - {{$client->wallet_name}} ({{$client->address}})
                                             </option>
                                         @endforeach
 
