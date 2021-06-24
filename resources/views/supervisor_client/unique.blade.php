@@ -55,26 +55,26 @@
                                     <input type="tel" name="phone" value="{{isset($user) ? $user->phone : ''}}"
                                         class="form-control" id="phone" required>
                                 </div>
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <select name="status" class="form-control" id="">
                                         <option {{($user->status == 'good') ? 'selected' : ''}} value="good">Bueno
-                                        </option>
-                                        <option {{($user->status == 'regular') ? 'selected' : ''}} value="regular">
-                                            Regular
-                                        </option>
-                                        <option {{($user->status == 'bad') ? 'selected' : ''}} value="bad">Malo</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-success btn-block btn-md">Guardar</button>
-                                </div>
-                            </form>
+                                </option>
+                                <option {{($user->status == 'regular') ? 'selected' : ''}} value="regular">
+                                    Regular
+                                </option>
+                                <option {{($user->status == 'bad') ? 'selected' : ''}} value="bad">Malo</option>
+                                </select>
+                        </div> --}}
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success btn-block btn-md">Guardar</button>
+                        </div>
+                        </form>
 
-                        </div><!-- .widget-body -->
-                    </div><!-- .widget -->
-                </div><!-- END column -->
-            </div><!-- .row -->
-        </section>
+                    </div><!-- .widget-body -->
+                </div><!-- .widget -->
+            </div><!-- END column -->
+    </div><!-- .row -->
+    </section>
     </div>
 </main>
 @endsection

@@ -20,9 +20,17 @@ class statisticsController extends Controller
      */
     public function index()
     {
-        $data = db_supervisor_has_agent::where('id_supervisor',Auth::id())
-            ->join('users','id_user_agent','=','users.id')
-            ->join('wallet','agent_has_supervisor.id_wallet','=','wallet.id')
+        $user_current = Auth::user();
+
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->select(
                 'users.*',
                 'wallet.name as wallet_name'
@@ -33,7 +41,7 @@ class statisticsController extends Controller
             'today' => Carbon::now()->toDateString(),
 
         );
-        return view('supervisor_statistics.agents',$data);
+        return view('supervisor_statistics.agents', $data);
     }
 
     /**
@@ -54,7 +62,6 @@ class statisticsController extends Controller
      */
     public function store(Request $request)
     {
-
     }
 
     /**
@@ -63,30 +70,30 @@ class statisticsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,$id)
+    public function show(Request $request, $id)
     {
-        $data = db_supervisor_has_agent::where('id_user_agent',$id)->first();
-        $data = db_wallet::where('id',$data->id_wallet)->first();
+        $data = db_supervisor_has_agent::where('id_user_agent', $id)->first();
+        $data = db_wallet::where('id', $data->id_wallet)->first();
         $date_start = $request->date_start;
         $date_end = $request->date_end;
 
-        $summary = db_summary::where('id_agent',$id)
-            ->whereDate('created_at','>=',Carbon::createFromFormat('d/m/Y',$date_start)->toDateString())
-            ->whereDate('created_at','<=',Carbon::createFromFormat('d/m/Y',$date_end)->toDateString())
+        $summary = db_summary::where('id_agent', $id)
+            ->whereDate('created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
+            ->whereDate('created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString())
             ->sum('amount');
 
-        $credit = db_credit::where('id_agent',$id)
-            ->whereDate('created_at','>=',Carbon::createFromFormat('d/m/Y',$date_start)->toDateString())
-            ->whereDate('created_at','<=',Carbon::createFromFormat('d/m/Y',$date_end)->toDateString())
+        $credit = db_credit::where('id_agent', $id)
+            ->whereDate('created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
+            ->whereDate('created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString())
             ->sum('amount_neto');
 
-        $bills = db_bills::where('id_agent',$id)
-            ->whereDate('created_at','>=',Carbon::createFromFormat('d/m/Y',$date_start)->toDateString())
-            ->whereDate('created_at','<=',Carbon::createFromFormat('d/m/Y',$date_end)->toDateString())
+        $bills = db_bills::where('id_agent', $id)
+            ->whereDate('created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
+            ->whereDate('created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString())
             ->sum('amount');
 
-        $days = Carbon::createFromFormat('d/m/Y',$date_start)->subDay();
-        $days= $days->diffInDays(Carbon::createFromFormat('d/m/Y',$date_end));
+        $days = Carbon::createFromFormat('d/m/Y', $date_start)->subDay();
+        $days = $days->diffInDays(Carbon::createFromFormat('d/m/Y', $date_end));
 
         $data = array(
             'summary' => $summary,
@@ -94,10 +101,10 @@ class statisticsController extends Controller
             'bills' => $bills,
             'days' => $days,
             'wallet' => $data,
-            'range' => 'Desde '.$date_start.' hasta '.$date_end
+            'range' => 'Desde ' . $date_start . ' hasta ' . $date_end
         );
 
-        return view('supervisor_statistics.show',$data);
+        return view('supervisor_statistics.show', $data);
     }
 
     /**

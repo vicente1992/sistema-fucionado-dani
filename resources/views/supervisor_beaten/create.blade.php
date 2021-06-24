@@ -10,7 +10,8 @@
           <div class="widget">
             <hr class="widget-separator">
             <div class="widget-body">
-              <form method="GET" action="{{url('beaten')}}" class="supervisor-client" enctype="multipart/form-data">
+              <form method="POST" action="{{url('supervisor/review-beaten')}}" class="supervisor-client"
+                enctype="multipart/form-data">
                 {{ csrf_field() }}
                 {{-- <div class="form-group">
                   <label for="wallet"> Ruta:</label>

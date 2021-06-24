@@ -7,12 +7,15 @@
         <section class="app-content">
             <div class="row">
                 <div class="col-md-12">
+                    @if (in_array(Auth::user()->level,['agent']))
+
                     <div class=" p-lg text-right">
                         <a type="button" href="{{url('client')}}" class="btn btn-inverse"><i class="fa fa-users"></i>
                             Mostar clientes</a>
                         <a type="button" href="{{url('route')}}" class="btn btn-deepOrange"><i class="fa fa-car"></i>
                             Continuar ruta</a>
                     </div><!-- .widget -->
+                    @endif
                 </div>
                 @if(app('request')->input('show')=='last')
                 <div class="col-md-12 col-sm-12">

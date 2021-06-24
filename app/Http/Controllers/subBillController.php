@@ -54,18 +54,21 @@ class subBillController extends Controller
         $category = $request->category;
         $user_current = Auth::user();
         $list_categories = db_list_bills::all();
-        $sql = [];
-        if ($user_current->level !== 'admin') {
-            $sql = array(
-                ['id_agent', '=', Auth::id()]
-            );
-        }
+        // $sql = [];
+        // if ($user_current->level !== 'admin') {
+        //     $sql = array(
+        //         ['id_agent', '=', Auth::id()]
+        //     );
+        // }
+
 
         if (!db_supervisor_has_agent::where('id_wallet', $id)->exists()) {
             return 'No existe agente con esta ruta';
         }
 
         $data_agent = db_supervisor_has_agent::where('id_wallet', $id)->first();
+
+
         //        dd($data_agent);
         // $sql = array(
         //     ['id_agent', '=', $data_agent->id_user_agent]
@@ -93,13 +96,10 @@ class subBillController extends Controller
         // }
 
         //Cpi
-        $sql = [];
+        // $sql = [];
+        $sql[] = ['id_user_agent', '=', $data_agent->id_user_agent];
 
-        if ($user_current->level !== 'admin') {
-            $sql = array(
-                ['id_user_agent', '=', $data_agent->id_user_agent]
-            );
-        }
+
 
         if (isset($date_start) && isset($date_end)) {
             $sql[] = ['bills.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)];
@@ -118,7 +118,7 @@ class subBillController extends Controller
                 'users.name as user_name',
                 'list_bill.name as category_name',
             )
-            ->orderBy('bills.created_at', 'desc')
+            ->orderBy('bills.created_at', 'asc')
             ->get();
 
         if (isset($category)) {

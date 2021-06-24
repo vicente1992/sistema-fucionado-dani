@@ -28,13 +28,20 @@ class cashController extends Controller
         // $sum = db_supervisor_has_agent::where('id_supervisor', Auth::id())
         //     ->join('wallet', 'id_wallet', '=', 'wallet.id')
         //     ->sum('agent_has_supervisor.base');
-        $report = db_close_day::where('id_supervisor', Auth::id())
+        $user_current = Auth::user();
+        $sql_sup = [];
+        if ($user_current->level !== 'admin') {
+            $sql_sup = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+        $report = db_close_day::where($sql_sup)
             ->join('wallet', 'wallet.id', '=', 'id_wallet')
             ->select('close_day.*', 'wallet.name as wallet_name')
             ->orderBy('id', 'desc')->get();
 
 
-        $agents_for_supervisor = db_supervisor_has_agent::where('id_supervisor', Auth::id())->get();
+        $agents_for_supervisor = db_supervisor_has_agent::where($sql_sup)->get();
 
         foreach ($agents_for_supervisor as $item) {
             $data_summary = db_summary::whereDate(
@@ -56,7 +63,7 @@ class cashController extends Controller
                     'summary.created_at'
                 )
                 ->groupBy('summary.id')
-                ->get();                      
+                ->get();
             $now = Carbon::now();
             $current_date = $now->format('d-m-Y');
             $close_day = db_close_day::whereDate('created_at', Carbon::now()->toDateString())
@@ -89,7 +96,7 @@ class cashController extends Controller
                 ->select('bills.*', 'wallet.name as wallet_name')
                 ->get();
 
-            $wallet = db_supervisor_has_agent::where('id_supervisor', Auth::id())
+            $wallet = db_supervisor_has_agent::where($sql_sup)
                 ->where('id_user_agent', '=', $item->id_user_agent)
                 ->join('wallet', 'id_wallet', '=', 'wallet.id')
                 ->select(
@@ -111,7 +118,7 @@ class cashController extends Controller
                 'box' =>  $base - $bill->sum('amount') + $total_summary
 
             ];
-        }       
+        }
 
         $sum = 0;
         foreach ($dataBox as $data) {

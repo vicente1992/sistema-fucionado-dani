@@ -28,6 +28,7 @@
                                     {{-- <td>{{$client->name}} {{$client->last_name}}</td> --}}
                                     <td>{{$client->user->name}} {{$client->user->last_name}}</td>
                                     <td>{{$client->user->province}}</td>
+                                    {{-- <td>{{$client->province}}</td> --}}
                                     <td>{{$client->total_credit}}</td>
                                     <td>{{$client->credit_close}}</td>
                                     <td>{{$client->credit_inprogress}}</td>

@@ -20,20 +20,28 @@ class trackerController extends Controller
      */
     public function index()
     {
-        $data = db_supervisor_has_agent::where('id_supervisor',Auth::id())
-            ->join('users','id_user_agent','=','users.id')
-            ->join('wallet','agent_has_supervisor.id_wallet','=','wallet.id')
+        $user_current = Auth::user();
+
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->select(
-                    'users.*',
-                    'wallet.name as wallet_name'
-                )
-             ->get();
+                'users.*',
+                'wallet.name as wallet_name'
+            )
+            ->get();
         $data = array(
             'clients' => $data,
             'today' => Carbon::now()->toDateString(),
 
         );
-        return view('supervisor_tracker.index',$data);
+        return view('supervisor_tracker.index', $data);
     }
 
     /**
@@ -64,16 +72,18 @@ class trackerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,$id)
+    public function show(Request $request, $id)
     {
         $date = $request->date_start;
 
-        if(!isset($date)){return 'Fecha Vacia';};
+        if (!isset($date)) {
+            return 'Fecha Vacia';
+        };
 
-        $data_summary = db_summary::whereDate('summary.created_at','=',Carbon::createFromFormat('d/m/Y',$date)->toDateString())
-            ->where('credit.id_agent',$id)
-            ->join('credit','summary.id_credit','=','credit.id')
-            ->join('users','credit.id_user','=','users.id')
+        $data_summary = db_summary::whereDate('summary.created_at', '=', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
+            ->where('credit.id_agent', $id)
+            ->join('credit', 'summary.id_credit', '=', 'credit.id')
+            ->join('users', 'credit.id_user', '=', 'users.id')
             ->select(
                 'users.name',
                 'users.last_name',
@@ -90,9 +100,9 @@ class trackerController extends Controller
 
 
 
-        $data_credit = db_credit::whereDate('credit.created_at','=',Carbon::createFromFormat('d/m/Y',$date)->toDateString())
-            ->where('credit.id_agent',$id)
-            ->join('users','credit.id_user','=','users.id')
+        $data_credit = db_credit::whereDate('credit.created_at', '=', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
+            ->where('credit.id_agent', $id)
+            ->join('users', 'credit.id_user', '=', 'users.id')
             ->select(
                 'credit.id as credit_id',
                 'users.id',
@@ -102,11 +112,12 @@ class trackerController extends Controller
                 'credit.created_at',
                 'credit.utility',
                 'credit.payment_number',
-                'credit.amount_neto')
+                'credit.amount_neto'
+            )
             ->get();
 
-        $data_bill = db_bills::whereDate('created_at',Carbon::createFromFormat('d/m/Y',$date)->toDateString())
-            ->where('id_agent',$id)
+        $data_bill = db_bills::whereDate('created_at', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
+            ->where('id_agent', $id)
             ->get();
 
         $data = array(
@@ -117,7 +128,7 @@ class trackerController extends Controller
             'total_credit' => $data_credit->sum('amount_neto')
         );
 
-        return view('supervisor_tracker.summary',$data);
+        return view('supervisor_tracker.summary', $data);
     }
 
     /**

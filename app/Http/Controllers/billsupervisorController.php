@@ -27,12 +27,18 @@ class billsupervisorController extends Controller
         $category = $request->category;
 
         $list_categories = db_list_bills::all();
-        $current_role = Auth::user()->level;
-        $current_user = Auth::id();
+
+        $user_current = Auth::user();
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+
 
         //Login Agent
-
-        $ormQry = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
+        $ormQry = db_supervisor_has_agent::where($sql)
             ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->join('bills', 'wallet.id', '=', 'bills.id_wallet')
             ->join('list_bill', 'bills.type', '=', 'list_bill.id')
@@ -70,7 +76,7 @@ class billsupervisorController extends Controller
 
 
 
-        $ormSum = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor', $current_user)
+        $ormSum = db_supervisor_has_agent::where($sql)
             ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->join('bills', 'wallet.id', '=', 'bills.id_wallet');
 
@@ -104,7 +110,6 @@ class billsupervisorController extends Controller
 
         $data = $ormQry->groupBy('bills.id')->orderBy('bills.created_at', 'desc')->get();
 
-
         $data = array(
             'clients' => $data,
             'sum' => $sum,
@@ -122,9 +127,25 @@ class billsupervisorController extends Controller
      */
     public function create()
     {
-        $data = db_supervisor_has_agent::where('id_supervisor', Auth::id())
-            ->join('wallet', 'id_wallet', '=', 'wallet.id')
+
+        $user_current = Auth::user();
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
+            ->select(
+                'users.*',
+                'wallet.name as wallet_name'
+            )
             ->get();
+        // $data = db_supervisor_has_agent::where('id_supervisor', Auth::id())
+        //     ->join('wallet', 'id_wallet', '=', 'wallet.id')
+        //     ->get();
 
         $data = array(
             'wallet' => $data,

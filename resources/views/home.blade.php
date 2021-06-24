@@ -1,16 +1,15 @@
 @extends('layouts.app')
-
 @section('admin-section')
 <div class="col-md-3 col-sm-6">
     <a href="{{url('admin/user/create')}}">
         <div class="widget stats-widget">
             <div class="widget-body clearfix bg-success">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Crear usuario</h3>
+                    <h3 class="widget-title text-white">Crear Cobradores</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-user-plus"></i></span>
             </div>
-        </div><!-- .widget -->
+        </div>
     </a>
 
 </div>
@@ -19,34 +18,31 @@
         <div class="widget stats-widget">
             <div class="widget-body clearfix bg-success">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Movimiento de personal</h3>
+                    <h3 class="widget-title text-white">Movimiento de Cobradores</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-calendar"></i></span>
             </div>
-        </div><!-- .widget -->
+        </div>
     </a>
-
 </div>
-
 <div class="col-md-3 col-sm-6">
     <a href="{{url('admin/route/create')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-purple">
+            <div class="widget-body clearfix bg-success">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Crear cartera</h3>
+                    <h3 class="widget-title text-white">Crear Cobros</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-map-marker"></i></span>
             </div>
         </div><!-- .widget -->
     </a>
-
 </div>
 <div class="col-md-3 col-sm-6">
     <a href="{{url('admin/user')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-deepOrange">
+            <div class="widget-body clearfix bg-success">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Listar usuarios</h3>
+                    <h3 class="widget-title text-white">Listar Cobradores</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-search-plus"></i></span>
             </div>
@@ -56,7 +52,7 @@
 <div class="col-md-3 col-sm-6">
     <a href="{{url('supervisor/graph?type=default')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-secondary">
+            <div class="widget-body clearfix bg-primary">
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Graficas</h3>
                 </div>
@@ -70,7 +66,7 @@
         <div class="widget stats-widget">
             <div class="widget-body clearfix bg-primary">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Reporte diario</h3>
+                    <h3 class="widget-title text-white">Reporte Diario</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-check-square-o"></i></span>
             </div>
@@ -78,25 +74,25 @@
     </a>
 </div>
 <div class="col-md-3 col-sm-6">
-    <a href="{{url('admin/wallet')}}">
+    <a href="{{url('supervisor/not-pay')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-inverse">
+            <div class="widget-body clearfix bg-primary">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Carteras</h3>
+                    <h3 class="widget-title text-white">Reporte Semanal</h3>
                 </div>
-                <span class="pull-right big-icon watermark"><i class="fa fa-bars"></i></span>
+                <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
             </div>
         </div><!-- .widget -->
     </a>
 </div>
 <div class="col-md-3 col-sm-6">
-    <a href="{{url('supervisor/client-review/create')}}">
+    <a href="{{url('supervisor/statistics')}}">
         <div class="widget stats-widget">
             <div class="widget-body clearfix bg-primary">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Reporte Clientes</h3>
+                    <h3 class="widget-title text-white">Estadistica</h3>
                 </div>
-                <span class="pull-right big-icon watermark"><i class="fa fa-male"></i></span>
+                <span class="pull-right big-icon watermark"><i class="fa fa-line-chart"></i></span>
             </div>
         </div><!-- .widget -->
     </a>
@@ -104,7 +100,7 @@
 <div class="col-md-3 col-sm-6">
     <a href="{{url('supervisor/client')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-purple">
+            <div class="widget-body clearfix bg-inverse">
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Editar Cliente</h3>
                 </div>
@@ -116,43 +112,113 @@
 <div class="col-md-3 col-sm-6">
     <a href="{{url('supervisor/review/create')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-deepOrange">
+            <div class="widget-body clearfix bg-inverse">
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Revision Cobros</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-eye"></i></span>
             </div>
-<<<<<<< Updated upstream
-        </div><!-- .widget -->
-    </a>
-=======
-</div><!-- .widget -->
+        </div> <!-- .widget -->
     </a>
 
->>>>>>> Stashed changes
-</div>
+</div><!-- .widget -->
 <div class="col-md-3 col-sm-6">
     <a href="{{url('supervisor/tracker')}}">
         <div class="widget stats-widget">
-            <div class="widget-body clearfix bg-success">
+            <div class="widget-body clearfix bg-inverse">
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Rastro Cobrador</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-search"></i></span>
             </div>
-</div><!-- .widget -->
+        </div><!-- .widget -->
     </a>
 </div>
 <div class="col-md-3 col-sm-6">
-    <a href="{{url('supervisor/statistics')}}">
+    <a href="{{url('supervisor/get-bills/create')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-inverse">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Gastos</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-cart-plus"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/cash')}}">
         <div class="widget stats-widget">
             <div class="widget-body clearfix bg-danger">
                 <div class="pull-left">
-                    <h3 class="widget-title text-white">Estadistica</h3>
+                    <h3 class="widget-title text-white">Lista de Cajas</h3>
                 </div>
-                <span class="pull-right big-icon watermark"><i class="fa fa-line-chart"></i></span>
+                <span class="pull-right big-icon watermark"><i class="fa fa-bars"></i></span>
             </div>
         </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/agent')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-danger">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Asignar cajas</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-dollar"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/review-beaten/create')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-danger">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Prestamos Vencidos</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{ url('supervisor/client-review/create') }}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-danger">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Reporte Clientes</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-male"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/payment')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-info">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Exportar Clientes</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('admin/wallet')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-info">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Lista de Cobros</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-bars"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+
+</div>
 @endsection
 
 @section('agent-section')
@@ -206,7 +272,6 @@
             </div>
         </div><!-- .widget -->
     </a>
-
 </div>
 <div class="col-md-3 col-sm-6">
     <a href="{{url('bill')}}">
@@ -402,7 +467,6 @@
             </div>
         </div><!-- .widget -->
     </a>
-
 </div>
 <div class="col-md-3 col-sm-6">
     <a href="{{url('supervisor/review/create')}}">
@@ -487,6 +551,30 @@
             <div class="widget-body clearfix bg-primary">
                 <div class="pull-left">
                     <h3 class="widget-title text-white">Reporte Clientes</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{ url('supervisor/not-pay') }}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-primary">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Reporte Semanal</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('supervisor/payment')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-success">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Exportar Clientes</h3>
                 </div>
                 <span class="pull-right big-icon watermark"><i class="fa fa-money"></i></span>
             </div>

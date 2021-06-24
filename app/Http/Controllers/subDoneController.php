@@ -35,19 +35,27 @@ class subDoneController extends Controller
             return 'No existe relacion wallet';
         };
         $id_agent = db_supervisor_has_agent::where('id_wallet', $id_wallet)->first();
-
-        $data = db_credit::whereDate('credit.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
-            ->whereDate('credit.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString())
-            ->where('id_agent', $id_agent->id_user_agent)
+        $sql = [];
+        if (isset($date_start) && isset($date_end)) {
+            $sql[] = ['credit.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString()];
+            $sql[] = ['credit.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString()];
+        }
+        $sql[] = ['id_agent', '=', $id_agent->id_user_agent];
+        $data = db_credit::where($sql)
+            // $data = db_credit::whereDate('credit.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
+            //     ->whereDate('credit.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString())
+            //     ->where('id_agent', $id_agent->id_user_agent)
             ->where('credit.status', '=', 'close')
             ->join('users', 'credit.id_user', '=', 'users.id')
-            ->select('credit.id as credit_id',
+            ->select(
+                'credit.id as credit_id',
                 'users.name',
                 'users.last_name',
                 'credit.created_at as credit_date',
                 'credit.amount_neto',
                 'credit.utility',
-                'credit.payment_number')
+                'credit.payment_number'
+            )
             ->get();
 
 

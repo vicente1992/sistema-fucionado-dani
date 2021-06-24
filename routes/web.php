@@ -58,7 +58,11 @@ Route::prefix('supervisor')->middleware(['device'])->group(function () {
     Route::resource('daily-report', 'dailyReportController');
     Route::resource('review-beaten', 'SubBeatenController');
     Route::resource('client-review', 'ClientReviewController');
-
+    Route::resource('not-pay', 'AdminNotPaymentController')->middleware('auth');
+    Route::resource('payment', 'AdminPaymentController')->middleware('auth');
+    Route::resource('summary-detail', 'AdminSummaryController');
+    Route::resource('get-bills', 'SubBillConsultationController');
+    Route::get('payment-export', 'AdminPaymentController@export')->middleware('auth');
     /*-----Sub Menu-----*/
     Route::prefix('menu')->middleware(['auth'])->group(function () {
         Route::resource('history', 'subHistoryController');

@@ -35,11 +35,54 @@ class subReportController extends Controller
             return 'ID wallet';
         };
 
+
         $data_agent = db_supervisor_has_agent::where('id_wallet', $id_wallet)->first();
 
+        // $sql = [];
+        // if (isset($date_start) && isset($date_end)) {
+        //     $sql[] = ['close_day.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)];
+        //     $sql[] = ['close_day.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)];
+        // }
+        // $sql[] = ['id_supervisor', '=', $data_agent->id_supervisor];
+        // $data = db_close_day::where($sql)
+        //     ->join('users', 'close_day.id_agent', '=', 'users.id')
+        //     ->join('credit', 'users.id', '=', 'credit.id_agent')
+        //     ->select(
+        //         'close_day.created_at', //fecha de cierre
+        //         'close_day.base_before', //base
+        //         'close_day.total as total_day', //cierre
+        //         'close_day.id',
+        //         'close_day.id_agent',
+        //         DB::raw('SUM(credit.amount_neto) as credit_total'), //creditos
+
+        //         DB::raw('SUM(credit.utility) as credit_utility') //%diario
+        //     )
+        //     ->groupBy('close_day.id')
+        //     ->get();
+
+        // dd($data);
+
+        // $data = db_close_day::whereDate('close_day.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
+        //     ->whereDate('close_day.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString())
+        //     ->where('id_supervisor', Auth::id())
+        //     ->join('users', 'close_day.id_agent', '=', 'users.id')
+        //     ->join('credit', 'users.id', '=', 'credit.id_agent')
+        //     ->select(
+        //         'close_day.created_at', //fecha de cierre
+        //         'close_day.base_before', //base
+        //         'close_day.total as total_day', //cierre
+        //         'close_day.id',
+        //         'close_day.id_agent',
+        //         DB::raw('SUM(credit.amount_neto) as credit_total'), //creditos
+
+        //         DB::raw('SUM(credit.utility) as credit_utility') //%diario
+        //     )
+        //     ->groupBy('close_day.id')
+        //     ->get();
         $data = db_close_day::whereDate('close_day.created_at', '>=', Carbon::createFromFormat('d/m/Y', $date_start)->toDateString())
             ->whereDate('close_day.created_at', '<=', Carbon::createFromFormat('d/m/Y', $date_end)->toDateString())
             ->where('id_supervisor', $data_agent->id_supervisor)
+            // ->where('id_supervisor', Auth::id())
             ->join('users', 'close_day.id_agent', '=', 'users.id')
             ->join('credit', 'users.id', '=', 'credit.id_agent')
             ->select(
@@ -54,7 +97,7 @@ class subReportController extends Controller
             )
             ->groupBy('close_day.id')
             ->get();
-
+        // dd($data);
         foreach ($data as $datum) {
             $datum->summary_total = round(db_summary::whereDate('created_at', '=', Carbon::parse($datum->created_at)->toDateString())
                 ->where('id_agent', $datum->id_agent)
@@ -70,7 +113,6 @@ class subReportController extends Controller
                 ->sum('amount');
             $datum->base_wallet = ($datum->base_before + $datum->summary_total) - ($datum->credit_total + $datum->bills_total + $datum->supervisor_bills);
         }
-
         $data = array(
             'credit' => $data,
             'date_start' => $date_start,

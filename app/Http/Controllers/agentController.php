@@ -18,9 +18,18 @@ class agentController extends Controller
      */
     public function index()
     {
-        $data = db_supervisor_has_agent::where('agent_has_supervisor.id_supervisor',Auth::id())
-            ->join('users','id_user_agent','=','users.id')
-            ->join('wallet','agent_has_supervisor.id_wallet','=','wallet.id')
+
+        $user_current = Auth::user();
+
+        $sql = [];
+        if ($user_current->level !== 'admin') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
+        $data = db_supervisor_has_agent::where($sql)
+            ->join('users', 'id_user_agent', '=', 'users.id')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->select(
                 'users.*',
                 'wallet.name as wallet_name',
@@ -32,7 +41,7 @@ class agentController extends Controller
             'today' => Carbon::now()->toDateString(),
 
         );
-        return view('supervisor_agent.index',$data);
+        return view('supervisor_agent.index', $data);
     }
 
     /**
@@ -42,7 +51,6 @@ class agentController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -75,8 +83,8 @@ class agentController extends Controller
      */
     public function edit($id)
     {
-        $data = User::where('users.id',$id)->join('agent_has_supervisor','users.id','=','agent_has_supervisor.id_user_agent')
-            ->join('wallet','agent_has_supervisor.id_wallet','=','wallet.id')
+        $data = User::where('users.id', $id)->join('agent_has_supervisor', 'users.id', '=', 'agent_has_supervisor.id_user_agent')
+            ->join('wallet', 'agent_has_supervisor.id_wallet', '=', 'wallet.id')
             ->select(
                 'users.name',
                 'users.last_name',
@@ -88,7 +96,7 @@ class agentController extends Controller
             )
             ->first();
 
-        return view('supervisor_agent.edit',$data);
+        return view('supervisor_agent.edit', $data);
     }
 
     /**
@@ -101,15 +109,17 @@ class agentController extends Controller
     public function update(Request $request, $id)
     {
         $base = $request->base_number;
-        if(!isset($base)){return 'Base Vacia';};
-        $base_current = db_supervisor_has_agent::where('id_user_agent',$id)
-            ->where('id_supervisor',Auth::id())->first()->base;
-        $base = $base_current+$base;
-        db_supervisor_has_agent::where('id_user_agent',$id)
-            ->where('id_supervisor',Auth::id())
-            ->update(['base'=>$base]);
+        if (!isset($base)) {
+            return 'Base Vacia';
+        };
+        $base_current = db_supervisor_has_agent::where('id_user_agent', $id)
+            ->where('id_supervisor', Auth::id())->first()->base;
+        $base = $base_current + $base;
+        db_supervisor_has_agent::where('id_user_agent', $id)
+            ->where('id_supervisor', Auth::id())
+            ->update(['base' => $base]);
 
-        $user_audit = User::where('users.id',$id)->select(
+        $user_audit = User::where('users.id', $id)->select(
             'name',
             'last_name'
         )->first();
@@ -117,9 +127,9 @@ class agentController extends Controller
             'created_at' => Carbon::now(),
             'id_user' => Auth::id(),
             'data' => json_encode(array(
-                'base'=>$base,
+                'base' => $base,
                 'agent_id' => $id,
-                'agent' => $user_audit->name.' '.$user_audit->last_name
+                'agent' => $user_audit->name . ' ' . $user_audit->last_name
             )),
             'event' => 'update',
             'device' => $request->device,
@@ -140,5 +150,4 @@ class agentController extends Controller
     {
         //
     }
-
 }

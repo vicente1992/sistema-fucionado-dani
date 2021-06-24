@@ -52,6 +52,8 @@ class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithCo
 
         return $data_user;
     }
+
+
     public function map($row): array
     {
         return [
