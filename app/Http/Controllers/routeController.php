@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class routeController extends Controller
 {
@@ -32,61 +33,84 @@ class routeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = db_credit::where('credit.id_agent', Auth::id())
-            ->join('users', 'credit.id_user', '=', 'users.id')
-            ->where('credit.status', 'inprogress')
-            ->select('credit.*')
-            ->orderBy('credit.order_list', 'asc')
-            ->get();
-        $data_filter = array();
-        $dt = Carbon::now()->toDateString();
+        // $data = db_credit::where('credit.id_agent', Auth::id())
+        //     ->join('users', 'credit.id_user', '=', 'users.id')
+        //     ->where('credit.status', 'inprogress')
+        //     ->select('credit.*')
+        //     ->orderBy('credit.order_list', 'asc')
+        //     ->get();
 
+        $paginate = array();
+        $src = $request->input('src');
+        $data = db_credit::join('users', 'credit.id_user', '=', 'users.id')
+            ->where('credit.id_agent', Auth::id())
+            ->where('credit.status', 'inprogress')
+            ->where(function ($query) use ($src) {
+                $query->where('users.name', 'like', '%' . $src . '%')
+                    ->orWhere('users.nit', 'like', '%' . $src . '%')
+                    ->orWhere('users.province', 'like', '%' . $src . '%')
+                    ->orWhere(
+                        'users.email',
+                        'like',
+                        '%' . $src . '%'
+                    )
+                    ->orWhere('users.last_name', 'like', '%' . $src . '%');
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('summary')
+                    ->whereRaw('id_credit = credit.id and DATE(created_at) = CURDATE()');
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('not_pay')
+                    ->whereRaw('id_credit = credit.id and DATE(created_at) = CURDATE()');
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('pending_pays')
+                    ->whereRaw('id_credit = credit.id and DATE(created_at) = CURDATE()');
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('blacklists')
+                    ->whereRaw('id_credit = credit.id and DATE(created_at) = CURDATE()');
+            })
+            ->select(
+                'credit.*',
+                'users.name as users_name',
+                'users.last_name as users_last_name',
+                'users.province as users_province',
+                'users.status as users_status',
+                'credit.created_at as credit_date',
+                DB::raw('(SELECT COALESCE(SUM(summary.amount) ,0) FROM summary where id_credit = credit.id) as positive'),
+                DB::raw('(SELECT COUNT(summary.amount) as s FROM summary where id_credit = credit.id) as payment_done'),
+                DB::raw('(credit.amount_neto + (credit.amount_neto * credit.utility)) as amount_total'), // BIEN!
+                DB::raw('ROUND(((credit.amount_neto + (credit.amount_neto * credit.utility)) / credit.payment_number),2) as payment_quote'),
+                DB::raw('((credit.amount_neto + (credit.amount_neto * credit.utility)) - (SELECT COALESCE(SUM(summary.amount) ,0) FROM summary where id_credit = credit.id)) as saldo'), // BIEN!
+                DB::raw('(((credit.amount_neto * credit.utility) + (credit.amount_neto))/credit.payment_number) as quote'),
+                DB::raw('(SELECT created_at FROM summary where id_credit = credit.id ORDER BY id DESC LIMIT 1) as last_pay'),
+                DB::raw('ROUND((credit.amount_neto + (credit.amount_neto * credit.utility)) - ((credit.amount_neto + (credit.amount_neto * credit.utility))/credit.payment_number),2) as rest'),
+            )
+            ->orderBy('credit.order_list', 'asc')
+            ->paginate(15);
+
+        $paginate = array(
+            'prevPage' => $data->previousPageUrl(),
+            'hasMore' => $data->hasMorePages(),
+            'nextPage' => $data->nextPageUrl()
+        );
 
         foreach ($data as $k => $d) {
-            $tmp_amount = db_summary::where('id_credit', $d->id)
-                ->where('id_agent', Auth::id())
-                ->sum('amount');
-            $amount_total = ($d->amount_neto) + ($d->amount_neto * $d->utility);
-            $tmp_quote = round(floatval(($amount_total / $d->payment_number)), 2);
-            $tmp_rest = round(floatval($amount_total - $tmp_amount), 2);
-            $d->positive = $tmp_amount;
-            $d->payment_quote =  $tmp_quote;
-            $d->rest = round(floatval($amount_total - $tmp_amount), 2);
-            $count_summary = db_summary::where('id_credit', $d->id)->count();
-            $d->payment_done = $count_summary;
-            $d->user = User::find($d->id_user);
-            $d->amount_total = $amount_total;
-            // $d->days_rest = db_not_pay::where('id_credit', $d->id)->count();
-            $d->days_summ = $count_summary;
-            // $d->days_rest = $dt->diffInDays(Carbon::parse($d->created_at));
-            // $d->num_days = $d->created_at->diffInDays($dt);
             $amount_summary = db_summary::where('id_credit', $d->id)->sum('amount');
-            $d->saldo = $d->amount_total - $amount_summary;
-            $d->quote = (floatval($d->amount_neto * $d->utility) + floatval($d->amount_neto)) / floatval($d->payment_number);
-            $d->setAttribute('last_pay', db_summary::where('id_credit', $d->id)->orderBy('id', 'desc')->first());
-            
             $days_crea = count_date($d->created_at);
             $d->days_crea = $days_crea;
-
             $pay_res = (floatval($days_crea * $d->quote)  -  $amount_summary);
-
             $days_rest = floatval($pay_res / $d->quote - 1);
             $d->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
-            // $d->days_rest = $days_crea - db_summary::where('id_credit', $d->id)->count() - 1;
-
-            if (!db_summary::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists()) {
-
-                $findExist = !db_not_pay::whereDate('created_at', '=', Carbon::now()->toDateString())->where('id_credit', $d->id)->exists();
-                $findPending = !db_pending_pay::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists();
-                $findBlacklists = !db_blacklists::where('id_credit', $d->id)->exists();
-                if ($findExist && $findPending && $findBlacklists) {
-                    $data_filter[] = $d;
-                }
-            }
         }
-
         $pending = db_pending_pay::where('id_agent', Auth::id())
             ->whereDate('pending_pays.created_at', '=', Carbon::now()->toDateString())
             ->join('credit', 'credit.id', '=', 'pending_pays.id_credit')
@@ -109,8 +133,10 @@ class routeController extends Controller
             }
         }
         $data_all = array(
-            'clients' => $data_filter,
-            'pending' => $data_filter_pending
+            'clients' => $data,
+            'pending' => $data_filter_pending,
+            'paginate' => $paginate,
+            'src' => $src
         );
 
         return view('route.index', $data_all);

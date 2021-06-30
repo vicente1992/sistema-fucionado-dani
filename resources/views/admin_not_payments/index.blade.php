@@ -8,7 +8,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="widget p-lg">
-            <a href="{{ url('export') }} " class="btn btn-sm btn-primary float-right ">Exportar
+            <a href="{{ url('supervisor/not-pay-export') }} " class="btn btn-sm btn-primary float-right ">Exportar
               Excel</a>
             <h4 class="m-b-lg">Clientes que no pagaron</h4>
 

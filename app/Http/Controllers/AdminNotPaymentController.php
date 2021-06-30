@@ -85,7 +85,7 @@ class AdminNotPaymentController extends Controller
         $dateRanges = CarbonPeriod::create($startDate, $endDate);
         Cookie::queue('date_start', $request->date_start);
         Cookie::queue('date_end', $request->date_end);
-        Cookie::queue('$id_agent', $request->$id_agent);
+        Cookie::queue('id_agent', $request->id_agent);
 
         $data_credit  = db_credit::where('credit.id_agent', $id_agent)
             ->where('credit.status', 'inprogress')
@@ -122,9 +122,11 @@ class AdminNotPaymentController extends Controller
 
     public function export()
     {
+        ob_end_clean(); // este 
+        ob_start(); // y este 
         $date_start =  Cookie::get('date_start');
         $date_end =  Cookie::get('date_end');
-        $id_agent =  Cookie::get('$id_agent');
+        $id_agent =  Cookie::get('id_agent');
         return Excel::download(new NotPayExport($date_start, $date_end, $id_agent), 'not_payments.xlsx');
     }
 

@@ -11,10 +11,12 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class PaymentExport implements FromCollection, WithHeadings, WithMapping, WithColumnWidths, WithEvents
-
-
-
+class PaymentExport implements
+    FromCollection,
+    WithHeadings,
+    WithMapping,
+    WithColumnWidths,
+    WithEvents
 {
     public function __construct(int  $user_id)
     {

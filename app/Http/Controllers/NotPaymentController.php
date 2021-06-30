@@ -102,6 +102,8 @@ class NotPaymentController extends Controller
 
     public function export()
     {
+        ob_end_clean(); // este 
+        ob_start(); // y este 
         $date_start =  Cookie::get('date_start');
         $date_end =  Cookie::get('date_end');
         return Excel::download(new NotPayExport($date_start, $date_end, Auth::id()), 'not_payments.xlsx');
