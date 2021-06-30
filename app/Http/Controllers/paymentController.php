@@ -77,6 +77,8 @@ class paymentController extends Controller
 
     public function export()
     {
+        ob_end_clean(); // este 
+        ob_start(); // y este 
         return Excel::download(new PaymentExport(Auth::id()), 'payments.xlsx');
     }
 
