@@ -71,12 +71,24 @@
         <section class="app-content">
             <div class="row">
                 <div class="col-md-12">
+                    {{-- {{$clients}} --}}
                     <div class="widget p-lg">
                         <a href="{{ url('payment-export') }} " class="btn btn-sm btn-primary float-right">Exportar
                             Excel</a>
                         <h4 class="m-b-lg">Clientes y Creditos</h4>
-
-                        <div class="d-none d-lg-block d-xl-block">
+                        <div class="payments-table d-none d-lg-block d-xl-block">
+                            <div class="input-router">
+                                <form action="{{url('payment')}}" method="GET" autocomplete="off">
+                                    <div class="input-group">
+                                        <input type="text" style="   border-color: #6c757d !important"
+                                            class="form-control input-src-route" name="src"
+                                            placeholder="Buscar por nombre, apellido, provincia">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                             <table class="table agente-payments-table">
                                 <thead>
                                     <tr>
@@ -93,7 +105,7 @@
 
                                 <tbody>
                                     @foreach($clients as $client)
-                                    @if($client->positive>0)
+                                    {{-- @if($client->positive>0) --}}
                                     <tr id="credit_{{$client->credit_id}}">
                                         <td>{{$client->name}} {{$client->last_name}}</td>
                                         <td>{{$client->credit_id}}</td>
@@ -112,26 +124,41 @@
                                                     @endif
                                         </td>
                                         <td>
-                                            <!-- Trigger the modal with a button -->
-
-
-
                                             <a href="{{url('payment')}}/{{$client->credit_id}}?rev=true"
                                                 class="btn btn-success btn-xs"><i class="fa fa-money"></i> Pagar</a>
                                             <a href="{{url('summary')}}?id_credit={{$client->credit_id}}"
                                                 class="btn btn-info btn-xs"><i class="fa fa-history"></i> Ver</a>
                                         </td>
                                     </tr>
-                                    @endif
-
+                                    {{-- @endif --}}
                                     @endforeach
 
                                 </tbody>
                             </table>
+                            <div>
+                                @if($paginate['prevPage'])
+                                <a class="btn btn-outline-dark" href="{{$paginate['prevPage']}}">Anterior</a>
+                                @endif
+                                @if($paginate['nextPage'])
+                                <a class="btn btn-outline-dark" href="{{$paginate['nextPage']}}">Siguiente</a>
+                                @endif
+                            </div>
                         </div>
 
                         {{--                            MOBILE--}}
-                        <div class="d-sm-block d-lg-none">
+                        <div class="payments-table d-sm-block d-lg-none">
+                            <div class="input-router">
+                                <form action="{{url('payment')}}" method="GET" autocomplete="off">
+                                    <div class="input-group">
+                                        <input type="text" style="   border-color: #6c757d !important"
+                                            class="form-control input-src-route" name="src"
+                                            placeholder="Buscar por nombre, apellido, provincia">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                             <table class="table agente-payments-table">
                                 <thead class="d-none">
                                     <tr>
@@ -148,7 +175,6 @@
 
                                 <tbody>
                                     @foreach($clients as $client)
-                                    @if($client->positive>0)
                                     <tr id="credit_{{$client->credit_id}}">
                                         <td>{{$client->name}} {{$client->last_name}}</td>
                                         <td>{{$client->credit_id}}</td>
@@ -167,22 +193,24 @@
                                                     @endif
                                         </td>
                                         <td>
-                                            <!-- Trigger the modal with a button -->
-
-
-
                                             <a href="{{url('payment')}}/{{$client->credit_id}}?rev=true"
                                                 class="btn btn-success btn-xs"><i class="fa fa-money"></i> Pagar</a>
                                             <a href="{{url('summary')}}?id_credit={{$client->credit_id}}"
                                                 class="btn btn-info btn-xs"><i class="fa fa-history"></i> Ver</a>
                                         </td>
                                     </tr>
-                                    @endif
-
                                     @endforeach
 
                                 </tbody>
                             </table>
+                            <div>
+                                @if($paginate['prevPage'])
+                                <a class="btn btn-outline-dark" href="{{$paginate['prevPage']}}">Anterior</a>
+                                @endif
+                                @if($paginate['nextPage'])
+                                <a class="btn btn-outline-dark" href="{{$paginate['nextPage']}}">Siguiente</a>
+                                @endif
+                            </div>
                         </div>
 
                     </div><!-- .widget -->

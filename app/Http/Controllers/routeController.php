@@ -102,7 +102,7 @@ class routeController extends Controller
             'hasMore' => $data->hasMorePages(),
             'nextPage' => $data->nextPageUrl()
         );
-
+        $data_filter = array();
         foreach ($data as $k => $d) {
             $amount_summary = db_summary::where('id_credit', $d->id)->sum('amount');
             $days_crea = count_date($d->created_at);
@@ -110,6 +110,13 @@ class routeController extends Controller
             $pay_res = (floatval($days_crea * $d->quote)  -  $amount_summary);
             $days_rest = floatval($pay_res / $d->quote - 1);
             $d->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
+
+            if (!db_summary::where('id_credit', $d->id)->whereDate('created_at', '=', Carbon::now()->toDateString())->exists()) {
+                $findBlacklists = !db_blacklists::where('id_credit', $d->id)->exists();
+                if ($findBlacklists) {
+                    $data_filter[] = $d;
+                }
+            }
         }
         $pending = db_pending_pay::where('id_agent', Auth::id())
             ->whereDate('pending_pays.created_at', '=', Carbon::now()->toDateString())
@@ -133,7 +140,7 @@ class routeController extends Controller
             }
         }
         $data_all = array(
-            'clients' => $data,
+            'clients' => $data_filter,
             'pending' => $data_filter_pending,
             'paginate' => $paginate,
             'src' => $src
