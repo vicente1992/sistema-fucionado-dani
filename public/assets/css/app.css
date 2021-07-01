@@ -84,9 +84,11 @@ body {
   transition-duration: 0.15s;
   transition-timing-function: ease;
 }
+.route-table .dataTables_paginate, .route-table .dataTables_filter {
+display: none;
+}
 .route-table .dataTables_paginate, .route-table .dataTables_filter
 .payments-table .dataTables_paginate, .payments-table .dataTables_filter 
-
 {
     /*background-color: red;*/
     display: none;
