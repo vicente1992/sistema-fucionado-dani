@@ -106,6 +106,8 @@ class AdminPaymentController extends Controller
 
     public function export()
     {
+        ob_end_clean(); // este 
+        ob_start(); // y este 
         $id_agent =  Cookie::get('$id_agent');
         return Excel::download(new PaymentExport($id_agent), 'payments.xlsx');
     }

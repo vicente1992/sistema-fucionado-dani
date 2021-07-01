@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -63,6 +64,7 @@ Route::prefix('supervisor')->middleware(['device'])->group(function () {
     Route::resource('summary-detail', 'AdminSummaryController');
     Route::resource('get-bills', 'SubBillConsultationController');
     Route::get('payment-export', 'AdminPaymentController@export')->middleware('auth');
+    Route::get('not-pay-export', 'AdminNotPaymentController@export')->middleware('auth');
     /*-----Sub Menu-----*/
     Route::prefix('menu')->middleware(['auth'])->group(function () {
         Route::resource('history', 'subHistoryController');
