@@ -33,22 +33,35 @@ class paymentController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
-
+        $paginate = array();
+        $src = $request->input('src');
         $data_user = db_credit::where('credit.id_agent', Auth::id())
+            ->where('credit.status', 'inprogress')
             ->join('users', 'credit.id_user', '=', 'users.id')
+            ->where(function ($query) use ($src) {
+                $query->where('users.name', 'like', '%' . $src . '%')
+                    ->orWhere('users.last_name', 'like', '%' . $src . '%');
+            })
             ->select(
                 'credit.*',
                 'users.id as id_user',
                 'users.name',
                 'users.last_name'
             )
-            ->get();
+            ->paginate(15);
+        //
+        $paginate = array(
+            'prevPage' => $data_user->previousPageUrl(),
+            'hasMore' => $data_user->hasMorePages(),
+            'nextPage' => $data_user->nextPageUrl()
+        );
+
+        // dd($data_user);
 
         foreach ($data_user as $data) {
             if (db_credit::where('id_user', $data->id_user)->where('id_agent', Auth::id())->exists()) {
-
                 $data->setAttribute('credit_id', $data->id);
                 $data->setAttribute('amount_neto', ($data->amount_neto) + ($data->amount_neto * $data->utility));
                 $data->setAttribute('positive', $data->amount_neto - (db_summary::where('id_credit', $data->id)
@@ -68,9 +81,12 @@ class paymentController extends Controller
                 $data->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
             }
         }
+        // dd($data_user);
         $data = array(
-            'clients' => $data_user
+            'clients' => $data_user,
+            'paginate' => $paginate,
         );
+        // dd($data); 
 
         return view('payment.index', $data);
     }

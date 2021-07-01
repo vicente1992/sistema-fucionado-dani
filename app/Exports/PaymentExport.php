@@ -49,6 +49,17 @@ class PaymentExport implements
                     ->sum('amount')));
                 $data->setAttribute('payment_current', db_summary::where('id_credit', $data->id)->count());
                 $data->setAttribute('remaining_payments', $data->payment_number  -  db_summary::where('id_credit', $data->id)->count());
+
+                // Coutas atrasads
+                $amount_summary = db_summary::where('id_credit', $data->id)->sum('amount');
+                $days_crea = count_date($data->created_at);
+                $data->total = floatval($data->utility_amount + $data->amount_neto);
+                $data->days_crea = $days_crea;
+                $quote = $data->total  / floatval($data->payment_number);
+                $quote = $data->total  / floatval($data->payment_number);
+                $pay_res = (floatval($days_crea * $quote)  -  $amount_summary);
+                $days_rest = floatval($pay_res / $quote - 1);
+                $data->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
             }
         }
 

@@ -25,7 +25,7 @@
                         @endif
                         <div class="route-table">
                             <div class="input-router">
-                                <form action="{{url('route')}}" method="GET">
+                                <form action="{{url('route')}}" method="GET" autocomplete="off">
                                     <div class="input-group">
                                         <input type="text" style="   border-color: #6c757d !important"
                                             class="form-control input-src-route" name="src"

@@ -32,21 +32,39 @@ class userController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $payment_number = DB::table('payment_number')->get();
         array(
             $paymente_number = 'payment_number'
         );
-        $user_current = Auth::user();
 
+        $user_current = Auth::user();
+        $paginate = array();
+        $src = $request->input('src');
         $user_has_agent = db_agent_has_user::where('id_agent', Auth::id())
             ->join('users', 'id_client', '=', 'users.id')
-            ->get();
+            ->where(function ($query) use ($src) {
+                $query->where('users.name', 'like', '%' . $src . '%')
+                    ->orWhere('users.last_name', 'like', '%' . $src . '%')
+                    ->orWhere('users.province', 'like', '%' . $src . '%')
+                    ->orWhere(
+                        'users.email',
+                        'like',
+                        '%' . $src . '%'
+                    );
+            })
+            ->paginate(15);
+        $paginate = array(
+            'prevPage' => $user_has_agent->previousPageUrl(),
+            'hasMore' => $user_has_agent->hasMorePages(),
+            'nextPage' => $user_has_agent->nextPageUrl()
+        );
+
 
         if ($user_current->level === 'admin') {
             $user_has_agent = db_agent_has_user::join('users', 'id_client', '=', 'users.id')
-                ->get();
+                ->paginate(15);
         }
 
 
@@ -79,7 +97,8 @@ class userController extends Controller
         $total_pending = floatval($user_has_agent->sum('summary_net') + $user_has_agent->sum('gap_credit'));
         $user_has_agent = array(
             'clients' => $user_has_agent,
-            'total_pending' => $total_pending
+            'total_pending' => $total_pending,
+            'paginate' => $paginate,
         );
         //        dd($user_has_agent);
         return view('client.index', $user_has_agent);
@@ -219,7 +238,7 @@ class userController extends Controller
         db_credit::insert($values);
 
         $user_audit = User::find($id);
-        $values['user_name'] = $user_audit->name.' '.$user_audit->last_name;
+        $values['user_name'] = $user_audit->name . ' ' . $user_audit->last_name;
         $audit = array(
             'created_at' => Carbon::now(),
             'id_user' => Auth::id(),
@@ -281,7 +300,8 @@ class userController extends Controller
     }
 
     /* Función que elimina los acantos y letras ñ*/
-    private function removeAccents($string){
+    private function removeAccents($string)
+    {
         $original = 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðòóôõöøùúûýýþÿ';
         $modify = 'AAAAAAACEEEEIIIIDNOOOOOOUUUUYBSAAAAAAACEEEEIIIIDOOOOOOUUUYYBY';
         $string = utf8_decode($string);

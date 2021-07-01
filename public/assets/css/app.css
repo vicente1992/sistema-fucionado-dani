@@ -84,11 +84,23 @@ body {
   transition-duration: 0.15s;
   transition-timing-function: ease;
 }
-.route-table .dataTables_paginate, .route-table .dataTables_filter{
+.route-table .dataTables_paginate, .route-table .dataTables_filter
+.payments-table .dataTables_paginate, .payments-table .dataTables_filter 
+
+{
     /*background-color: red;*/
     display: none;
 
 }
+.client-table .dataTables_paginate, .client-table .dataTables_filter{
+display: none;
+}
+.payments-table .dataTables_paginate{
+display: none;
+}
+/* .agente-payments-table .dataTables_paginate , .agente-payments-table .dataTables_filter{
+display: none;
+} */
 .input-router{
     /*display: flex;*/
     align-content: center;
