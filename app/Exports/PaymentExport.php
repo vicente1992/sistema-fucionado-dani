@@ -60,6 +60,13 @@ class PaymentExport implements
                 $pay_res = (floatval($days_crea * $quote)  -  $amount_summary);
                 $days_rest = floatval($pay_res / $quote - 1);
                 $data->days_rest =  round($days_rest) > 0 ? round($days_rest) : 0;
+                if ($data->days_rest < 12) {
+                    $data->estado = 'BUENO';
+                } else if ($data->days_rest >= 12 && $data->days_rest < 30) {
+                    $data->estado = 'REGULAR';
+                } else if ($data->days_rest > 30) {
+                    $data->estado = 'MALO';
+                }
             }
         }
 
@@ -78,6 +85,10 @@ class PaymentExport implements
             $row->payment_current > 0 ?  $row->payment_current :  '0',
             $row->remaining_payments,
             $row->payment_number,
+            $row->estado,
+            // $row->days_rest < 12 ? 'BUENO' , $row->days_rest >= 12  && $row->days_rest < 30 ? 'REGULAR' : '', $row->days_rest >= 30 ? 'MALO' : '',
+
+            //  $client->days_rest >= 12 && $client->days_rest <30
 
         ];
     }
@@ -96,6 +107,7 @@ class PaymentExport implements
             'Cuotas pagada',
             'Pagos restantes',
             'Cuotas totales',
+            'Estado',
         ];
     }
     public function columnWidths(): array
@@ -109,6 +121,7 @@ class PaymentExport implements
             'F' => 18,
             'G' => 18,
             'H' => 18,
+            'I' => 18,
         ];
     }
     public function registerEvents(): array
@@ -129,9 +142,9 @@ class PaymentExport implements
                 // $event->sheet->autoSize(true);
                 $to = $event->sheet->getDelegate()->getHighestRowAndColumn();
                 $rows = $event->sheet->getDelegate()->toArray();
-                $cellRange = 'A1:H1';
+                $cellRange = 'A1:I1';
                 $event->sheet->getStyle($cellRange)->ApplyFromArray($styleArray);
-                $event->sheet->getStyle('A:H')->ApplyFromArray($styleArray4);
+                $event->sheet->getStyle('A:I')->ApplyFromArray($styleArray4);
                 $event->sheet->getStyle('A1')->applyFromArray([
                     'borders' => [
                         'outline' => [
@@ -156,6 +169,7 @@ class PaymentExport implements
                 $column_f = '';
                 $column_g = '';
                 $column_h = '';
+                $column_i = '';
                 foreach ($rows as  $row) {
                     if (is_numeric($row[3])) {
                         $column_d = $column_d + $row[3];
@@ -175,13 +189,14 @@ class PaymentExport implements
                             "$column_e",
                             " $column_f",
                             "$column_g",
-                            "$column_h"
+                            "$column_h",
+                            $column_i
                         ),
                     ),
                     $event
                 );
                 $total_rows = count($rows) + 1;
-                $range = 'A' . $total_rows . ':' . 'H' . $total_rows;
+                $range = 'A' . $total_rows . ':' . 'I' . $total_rows;
                 $event->sheet->getStyle($range)->applyFromArray([
                     'borders' => [
                         'allBorders' => [

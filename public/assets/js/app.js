@@ -875,8 +875,8 @@ function limpiarNumero(obj) {
         dragClass: 'drag',
 
     });
-     if (!localStorage.getItem('change-list')) {
-         $('#complete-item-drop-route').sortable('destroy');
+    if (!localStorage.getItem('change-list')) {
+        $('#complete-item-drop-route').sortable('destroy');
     }
 
     function changeOrderRoute() {
@@ -930,6 +930,7 @@ function limpiarNumero(obj) {
     const pending = document.getElementById('pending');
     const logout = document.getElementById('logout');
     const goBack = document.getElementById('goBack');
+    const btnPay = document.getElementById('btnPay');
 
     if (localStorage.getItem('change-list')) {
         changeList?.classList.toggle('d-none');
@@ -949,9 +950,25 @@ function limpiarNumero(obj) {
     logout?.addEventListener('click', function () {
         localStorage.removeItem('change-list');
     });
-    goBack?.addEventListener('submit', function () {
-        localStorage.removeItem('change-list');
-    });
+
+    // let saldo;
+    // btnPay?.addEventListener('click', function () {
+    //     const amount = $("#amount").val();
+    //     saldo = $("#saldoCredit").val();
+    //     $("#pay").text(amount);
+    //     $("#totalAmount").text(saldo - amount);
+    // });
+    // document.getElementById("amount").addEventListener("keyup", function (event) {
+    //     const amount = event.target.value;
+    //     $("#pay").text(amount);
+    //     $("#totalAmount").text(saldo - amount);
+    // });
+    // document.getElementById("close").addEventListener("click", function (event) {
+    //     // document.getElementById('formPay').reset();
+    //     console.log('click....')
+
+    // });
+
 
 
 }(jQuery, window);

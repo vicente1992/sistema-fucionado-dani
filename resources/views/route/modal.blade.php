@@ -1,10 +1,11 @@
 <div id="openModal{{$client->id}}" class="modalDialog">
 
     <div>
-        <a href="#close" title="Close" class="close">X</a>
+        <a href="#close" title="Close" class="close" id="close">X</a>
         <h4 class="widget-title">Abono de cuota</h4>
 
-        <form method="POST" class="payment-create" action="{{url('summary')}}" enctype="multipart/form-data">
+        <form method="POST" class="payment-create" action="{{url('summary')}}" enctype="multipart/form-data"
+            id="formPay">
             {{ csrf_field() }}
             <div class="form-group">
                 <label for="name">Nombres:</label>
@@ -32,7 +33,7 @@
             </div>
             <div class="form-group">
                 <label for="phone">Saldo:</label>
-                <input type="tel" name="phone" value="{{$client->rest}}" readonly class="form-control" id="phone">
+                <input type="tel" name="phone" value="{{$client->saldo}}" readonly class="form-control" id="phone">
             </div>
             <div class="form-group">
                 <label for="amount">Valor de cuota:</label>
@@ -44,7 +45,7 @@
             </div>
             <div class="form-group">
                 <label for="amount">Valor de abono:</label>
-                <input type="number" step="any" min="1" max="{{$client->rest}}"
+                <input type="number" step="any" min="1" max="{{$client->saldo}}"
                     value="{{($client->rest < $client->payment_quote) ? $client->rest : $client->payment_quote}}"
                     name="amount" class="form-control" id="amount">
             </div>
