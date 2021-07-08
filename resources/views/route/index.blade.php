@@ -62,7 +62,6 @@
                                         item-id="{{$client->id }}">
                                         <td class="hidden">{{$client->order_list}}</td>
                                         <td>{{$client->id}}</td>
-                                        {{-- <td>{{$client->user->name}} {{$client->user->last_name}}</td> --}}
                                         <td>{{$client->users_name}} {{$client->users_last_name}}</td>
                                         <td>{{$client->credit_date}}</td>
                                         <td>
@@ -110,7 +109,8 @@
                                                 </button>
                                             </form>
 
-                                            <a href="#openModal{{$client->id}}" class="btn btn-success btn-xs">
+                                            <a href="#openModal{{$client->id}}" class="btn btn-success btn-xs"
+                                                id="btnPay">
                                                 Pagar</a>
 
                                             @include('route.modal')
