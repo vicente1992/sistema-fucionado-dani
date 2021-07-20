@@ -137,7 +137,7 @@ class graphController extends Controller
         foreach ($periodOfWeeks->toArray() as  $date) {
             if ($date->copy()->isoFormat('dddd') === 'lunes') {
                 $day = $date->copy()->endOfWeek(Carbon::SATURDAY)->isoFormat('D');
-                $month = $date->copy()->isoFormat('MMMM');
+                $month = $date->copy()->endOfWeek()->isoFormat('MMMM');
                 $weekLabels[] =  'Semana ' . $day . ' ' . $month;
                 $data[] = ['created_at', '>=', $date];
                 $data[] = ['created_at', '<=', $date->copy()->endOfWeek()];
