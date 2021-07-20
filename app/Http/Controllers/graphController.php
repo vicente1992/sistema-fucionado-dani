@@ -26,8 +26,6 @@ class graphController extends Controller
             'data' => [],
         );
         $data = $this->getAgents();
-        // dd(array_merge($data, $response));
-        // return view('graph.show', array_merge($data, $response));
         switch ($type) {
             case 'overdraft':
                 $data = $this->getAgents();
