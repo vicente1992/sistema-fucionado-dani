@@ -8,8 +8,20 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="widget p-lg">
-                        <h4 class="m-b-lg">Prestamos</h4>
-                        <form class="container" action="{{url('supervisor/graph')}}" method="POST">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <h4 class="m-b-lg mx-2">Prestamos</h4>
+                            </div>
+                            @if (count($data)>0)
+                            <div class="col-md-6">
+                                <a href="{{url('supervisor/graph?type=payment')}}{{$params}}"
+                                    class="btn btn-primary">Ver graficas de pagos</a>
+                                <a href="{{url('supervisor/graph?type=bill')}}{{$params}}" class="btn btn-danger">Ver
+                                    graficas de gastos</a>
+                            </div>
+                            @endif
+                        </div>
+                        <form class="container" action="{{url('supervisor/graph')}}" method="GET">
                             {{ csrf_field() }}
                             <div class="form-group">
                                 <label for="payment_number">Cobrador:</label>
@@ -29,10 +41,17 @@
                                     <input type="text" name="date_start" class="form-control datepicker-trigger"
                                         id="date_start" required>
                                 </div>
-                                {{--                                    <div class="col-sm-4">--}}
-                                {{--                                        <label for="nit_number"> Fecha Final:</label>--}}
-                                {{--                                        <input type="text" name="date_end"  class="form-control datepicker-trigger" id="date_end" required>--}}
-                                {{--                                    </div>--}}
+                                <div class="col-sm-4">
+                                    <label for="nit_number"> Número de semanas:</label>
+                                    <select name="numberWeek" class="form-control" id="numberWeek" required>
+                                        @foreach($numberWeeks as $numberWeek)
+                                        <option value="{{$numberWeek}}">
+                                            {{$numberWeek}}
+                                        </option>
+                                        @endforeach
+                                    </select>
+
+                                </div>
                                 <div class="col-sm-4">
                                     <button class="btn btn-info hidden" type="submit">Buscar</button>
                                     <a href="{{url('supervisor/graph?type=default')}}" class="btn btn-dark">Regresar</a>
@@ -65,22 +84,11 @@
                                     <canvas id="dataItems"></canvas>
                                 </div>
                             </div>
-
-                            {{--                                    graficas por rango de fecha--}}
-                            {{--                                    <div class="row pt-5" id="graphs">--}}
-                            {{--                                        <div class="col-sm-6">--}}
-                            {{--                                            <div  class="chart-container">--}}
-                            {{--                                                <canvas id="dataItems" ></canvas>--}}
-                            {{--                                            </div>--}}
-
-                            {{--                                        </div>--}}
-                            {{--                                        <div class="col-sm-6">--}}
-                            {{--                                            <div  class="chart-container">--}}
-                            {{--                                                <canvas id="dataAmount"></canvas>--}}
-                            {{--                                            </div>--}}
-
-                            {{--                                        </div>--}}
-                            {{--                                    </div>--}}
+                            <div class="mt-3 d-flex flex-wrap justify-content-center">
+                                <div class="chart-container" style="width: 100vh">
+                                    <canvas id="dataWeeks"></canvas>
+                                </div>
+                            </div>
                             @endif
                         </div>
                     </div><!-- .widget -->
@@ -112,6 +120,12 @@
                 [dataGraph.labels.lastWeekend, dataGraph.labels.thisWeekend],
                 'Dinero prestado por rango',
                 'dataAmount'
+            );
+            graphicsWeeks(
+            dataGraph.dataWeeks.data,
+            dataGraph.dataWeeks.labels,
+            'Dinero prestado por semana',
+            'dataWeeks'
             );
         }
         setTimeout(function () {
