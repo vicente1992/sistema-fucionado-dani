@@ -136,8 +136,9 @@ class graphController extends Controller
         $periodOfWeeks = CarbonPeriod::create($endOfWeek, $date_start);
         foreach ($periodOfWeeks->toArray() as  $date) {
             if ($date->copy()->isoFormat('dddd') === 'lunes') {
-                $month = $date->copy()->isoFormat('D MMMM');
-                $weekLabels[] =  'Semana ' . $month;
+                $day = $date->copy()->endOfWeek(Carbon::SATURDAY)->isoFormat('D');
+                $month = $date->copy()->isoFormat('MMMM');
+                $weekLabels[] =  'Semana ' . $day . ' ' . $month;
                 $data[] = ['created_at', '>=', $date];
                 $data[] = ['created_at', '<=', $date->copy()->endOfWeek()];
                 $data[] = ['id_agent', $agent];
