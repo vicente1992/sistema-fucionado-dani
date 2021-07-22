@@ -7,6 +7,7 @@ use App\db_audit;
 use App\db_bills;
 use App\db_close_day;
 use App\db_credit;
+use App\db_income_history;
 use App\db_list_bills;
 use App\db_summary;
 use App\db_supervisor_has_agent;
@@ -116,7 +117,9 @@ class closeController extends Controller
         $today_sell = db_credit::whereDate('created_at', '=', Carbon::now()->toDateString())
             ->where('id_agent', $id)
             ->sum('amount_neto');
-
+        $today_income = db_income_history::whereDate('created_at', '=', Carbon::now()->toDateString())
+            ->where('id_user_agent', $id)
+            ->sum('base');
         $total = floatval($base_amount + $today_amount) - floatval($today_sell + $bills);
         $average = 1000;
 
@@ -127,6 +130,7 @@ class closeController extends Controller
             'bills' => $bills,
             'total' => $total,
             'average' => $average,
+            'today_income' => $today_income,
             'user' => User::find($id)
         );
 

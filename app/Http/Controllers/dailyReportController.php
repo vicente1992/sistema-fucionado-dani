@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\db_bills;
 use App\db_close_day;
 use App\db_credit;
+use App\db_income_history;
 use App\db_summary;
 use App\db_supervisor_has_agent;
 use App\User;
@@ -65,6 +66,10 @@ class dailyReportController extends Controller
             $base_credit = db_credit::whereDate('created_at', Carbon::now()->toDateString())
                 ->where('id_agent', $item->id_user_agent)
                 ->sum('amount_neto');
+
+            $today_income = db_income_history::whereDate('created_at', '=', Carbon::now()->toDateString())
+                ->where('id_user_agent', $item->id_user_agent)
+                ->sum('base');
             $base -= $base_credit;
             $base_final = $base_final;
             $base_credit = $base_credit;
@@ -84,6 +89,8 @@ class dailyReportController extends Controller
                 ->get();
 
 
+
+
             $data[] = (object) [
                 'name' => $name,
                 'base_agent' => $base,
@@ -92,9 +99,11 @@ class dailyReportController extends Controller
                 'total_summary' => $total_summary,
                 'base_credit' => $base_credit,
                 'current_date' => $current_date,
-                'close_day' => $close_day
+                'close_day' => $close_day,
+                'today_income' => $today_income
             ];
         }
+
         return view('daily-report.index', array(
             'data' => $data
         ));

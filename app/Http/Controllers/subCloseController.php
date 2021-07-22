@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\db_bills;
 use App\db_close_day;
 use App\db_credit;
+use App\db_income_history;
 use App\db_summary;
 use App\db_supervisor_has_agent;
 use App\db_wallet;
@@ -97,6 +98,9 @@ class subCloseController extends Controller
         ) {
             $base_amount = db_close_day::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date)->toDateString())->first()->base_before;
         }
+        $today_income = db_income_history::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date)->toDateString())
+            ->where('id_wallet', $id)
+            ->sum('base');
 
         $total = floatval($base_amount_before + $today_amount) - floatval($today_sell + $bills);
         $average = 1000;
@@ -109,7 +113,8 @@ class subCloseController extends Controller
             'bills' => $bills,
             'total' => $total,
             'average' => $average,
-            'id_wallet' => $id
+            'id_wallet' => $id,
+            'today_income' => $today_income
         );
 
         return view('submenu.close.show', $data);

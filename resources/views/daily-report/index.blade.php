@@ -13,20 +13,21 @@
                             <h3 class="widget-title text-dark">{{$item->name}}</h3>
                             <h3 class="widget-title text-dark">DISPONIBLE (CAJA)</h3>
                             <h3 class="widget-title text-dark">
-                                <h5> + Base Inicial = <span class=""> {{$item->base_final}}</span>
-                                    <h5> + Cobrado = <span class=""> {{$item->total_summary}}</span>
-                                        <h5> - Prestado = {{$item->base_credit}}</h5>
-                                        <h5> - Gastos = {{$item->total_bill}} </h5>
-                                        <h5> ---------------------</h5>
-                                        <h5>Día cerrado
-                                            @if ($item->close_day === 0)
-                                            <span class="open ml-4"><i class="fa fa-times"></i> </span>
-                                            @else
-                                            <span class="closed ml-4"><i class="fa fa-check"></i></span>
-                                            @endif
-                                        </h5>
-                                        <h5 class="text-success"> Caja =
-                                            {{($item->base_agent - $item->total_bill) + $item->total_summary}}</h5>
+                                <h5> + Base Inicial = <span class=""> {{$item->base_final - $item->today_income}}</span>
+                                    <h5> + Dinero ingresado = <span class=""> {{$item->today_income}}</span>
+                                        <h5> + Cobrado = <span class=""> {{$item->total_summary}}</span>
+                                            <h5> - Prestado = {{$item->base_credit}}</h5>
+                                            <h5> - Gastos = {{$item->total_bill}} </h5>
+                                            <h5> ---------------------</h5>
+                                            <h5>Día cerrado
+                                                @if ($item->close_day === 0)
+                                                <span class="open ml-4"><i class="fa fa-times"></i> </span>
+                                                @else
+                                                <span class="closed ml-4"><i class="fa fa-check"></i></span>
+                                                @endif
+                                            </h5>
+                                            <h5 class="text-success"> Caja =
+                                                {{($item->base_agent - $item->total_bill) + $item->total_summary}}</h5>
                             </h3>
                         </div>
                     </div>

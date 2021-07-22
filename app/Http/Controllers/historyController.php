@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\db_bills;
 use App\db_close_day;
 use App\db_credit;
+use App\db_income_history;
 use App\db_summary;
 use App\db_supervisor_has_agent;
 use Carbon\Carbon;
@@ -41,7 +42,6 @@ class historyController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
@@ -64,7 +64,7 @@ class historyController extends Controller
         $base_amount_before = $base_raw->base_before;
         $base_amount_total = $base_raw->total;
 
-//        $base_amount = db_supervisor_has_agent::where('id_user_agent',Auth::id())->first()->base;
+        //        $base_amount = db_supervisor_has_agent::where('id_user_agent',Auth::id())->first()->base;
         $today_amount = db_summary::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date)
             ->toDateString())
             ->where('id_agent', Auth::id())
@@ -75,22 +75,25 @@ class historyController extends Controller
             ->sum('amount_neto');
         $bills = db_bills::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date)
             ->toDateString())
-             ->where('id_agent', Auth::id())
+            ->where('id_agent', Auth::id())
             ->sum('amount');
         $total = floatval($base_amount_before + $today_amount) - floatval($today_sell + $bills);
         $average = 1000;
-
+        $today_income = db_income_history::whereDate('created_at', '=', Carbon::createFromFormat('d/m/Y', $date)
+            ->toDateString())
+            ->where('id_user_agent', Auth::id())
+            ->sum('base');
         $data = array(
             'base' => $base_amount_before,
             'today_amount' => $today_amount,
             'today_sell' => $today_sell,
             'bills' => $bills,
             'total' => $total,
-            'average' => $average
+            'average' => $average,
+            'today_income' => $today_income
         );
 
         return view('history.create', $data);
-
     }
 
     /**
