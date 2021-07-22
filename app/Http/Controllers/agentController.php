@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\db_audit;
+use App\db_income_history;
 use App\db_supervisor_has_agent;
 use App\User;
 use Carbon\Carbon;
@@ -112,17 +113,37 @@ class agentController extends Controller
         if (!isset($base)) {
             return 'Base Vacia';
         };
+        $user_current = Auth::user();
+
+        $sql = [];
+        if ($user_current->level === 'supervisor') {
+            $sql = array(
+                ['id_supervisor', '=', Auth::id()]
+            );
+        }
         $base_current = db_supervisor_has_agent::where('id_user_agent', $id)
-            ->where('id_supervisor', Auth::id())->first()->base;
+            ->where($sql)->first()->base;
+        $supervisor_has_agent = db_supervisor_has_agent::where('id_user_agent', $id)
+            ->where($sql)->first();
         $base = $base_current + $base;
         db_supervisor_has_agent::where('id_user_agent', $id)
-            ->where('id_supervisor', Auth::id())
+            ->where($sql)
             ->update(['base' => $base]);
 
         $user_audit = User::where('users.id', $id)->select(
             'name',
             'last_name'
         )->first();
+        $valuesIncome = array(
+            'id_user_agent' => $id,
+            'id_supervisor' => $supervisor_has_agent->id_supervisor,
+            'base' => $request->base_number,
+            'base_current' => $base_current,
+            'base_total' => $base,
+            'id_wallet' => $supervisor_has_agent->id_wallet,
+            'created_at' => Carbon::now()
+        );
+        db_income_history::insert($valuesIncome);
         $audit = array(
             'created_at' => Carbon::now(),
             'id_user' => Auth::id(),

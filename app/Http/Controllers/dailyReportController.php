@@ -58,7 +58,7 @@ class dailyReportController extends Controller
             $current_date = $now->format('d-m-Y');
             $close_day = db_close_day::whereDate('created_at', Carbon::now()->toDateString())
                 ->where('id_agent', $item->id_user_agent)
-                ->first();
+                ->first()->total ?? 0;
 
             $base = db_supervisor_has_agent::where('id_user_agent', $item->id_user_agent)->first()->base ?? 0;
             $base_final = db_supervisor_has_agent::where('id_user_agent', $item->id_user_agent)->first()->base ?? 0;

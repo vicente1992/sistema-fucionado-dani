@@ -129,7 +129,6 @@ class cashController extends Controller
             'report' => $report,
             'sum' => $sum
         );
-
         return view('supervisor_cash.index', $data);
     }
 

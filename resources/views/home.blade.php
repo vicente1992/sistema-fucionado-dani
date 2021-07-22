@@ -217,7 +217,18 @@
             </div>
         </div><!-- .widget -->
     </a>
-
+</div>
+<div class="col-md-3 col-sm-6">
+    <a href="{{url('admin/history/create')}}">
+        <div class="widget stats-widget">
+            <div class="widget-body clearfix bg-info">
+                <div class="pull-left">
+                    <h3 class="widget-title text-white">Historial de ingreso</h3>
+                </div>
+                <span class="pull-right big-icon watermark"><i class="fa fa-bars"></i></span>
+            </div>
+        </div><!-- .widget -->
+    </a>
 </div>
 @endsection
 

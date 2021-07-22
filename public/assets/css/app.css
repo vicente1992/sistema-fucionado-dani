@@ -5342,6 +5342,29 @@ td.mail-right {
   .agente-beaten-table td:nth-of-type(6):before {
     content: "Tipo de Negocio";
   }
+  /* agente-income-table */
+   .agente-income-table td:nth-of-type(1):before {
+    content: "Id";
+  }
+   .agente-income-table td:nth-of-type(2):before {
+    content: "Agente";
+  }
+   .agente-income-table td:nth-of-type(3):before {
+    content: "Cartera";
+  }
+   .agente-income-table td:nth-of-type(4):before {
+    content: "Fecha del ingreso";
+  }
+   .agente-income-table td:nth-of-type(4):before {
+    content: "Valor ingresado";
+  }
+   .agente-income-table td:nth-of-type(4):before {
+    content: "Valor anterior";
+  }
+   .agente-income-table td:nth-of-type(4):before {
+    content: "Valor Total";
+  }
+ 
 
   /*FIn Luis*/
 }
@@ -5530,4 +5553,14 @@ canvas {
   position: relative;
   margin: auto;
   height: 70vh;
+}
+
+
+.closed .fa {
+  font-size: 30px;
+ color: green;
+}
+.open .fa {
+  font-size: 30px;
+ color: red;
 }

@@ -93,4 +93,5 @@ Route::prefix('admin')->middleware(['admin', 'device'])->group(function () {
     Route::resource('route', 'adminRouteController');
     Route::resource('audit', 'auditController', ['only' => ['index']]);
     Route::resource('wallet', 'AdminWalletController');
+    Route::resource('history', 'IcomeHistoryController');
 });
