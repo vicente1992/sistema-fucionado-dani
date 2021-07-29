@@ -18,6 +18,8 @@
                                     class="btn btn-primary">Ver graficas de pagos</a>
                                 <a href="{{url('supervisor/graph?type=bill')}}{{$params}}" class="btn btn-danger">Ver
                                     graficas de gastos</a>
+                                <a href="{{url('supervisor/graph?type=winnings')}}{{$params}}" class="btn btn-info">Ver
+                                    graficas de ganancias y gastos</a>
                             </div>
                             @endif
                         </div>

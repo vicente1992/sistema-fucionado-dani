@@ -49,6 +49,10 @@ class graphController extends Controller
                 $data = $this->getAgents();
                 return view('graph.payment', array_merge($data, $response, $params));
                 break;
+            case 'winnings':
+                $data = $this->getAgents();
+                return view('graph.winnings', array_merge($data, $response, $params));
+                break;
             default:
                 return view('graph.index', $response);
         }
@@ -173,6 +177,9 @@ class graphController extends Controller
             case 'payment':
                 $dataGraph = $this->payment($datesThisWeek, $datesLastWeek, $agent, $thisWeekendSql, $lastWeekendSql, $dataWeeks, $weekLabels);
                 break;
+            case 'winnings':
+                $dataGraph = $this->winnings($date_start, $agent, $dataWeeks, $weekLabels);
+                break;
         }
 
         return array(
@@ -261,7 +268,7 @@ class graphController extends Controller
         $dataDaysThisWeekTotal = 0;
         $dataDaysLastWeekTotal = 0;
         $dataDaysLabels = [];
-        $dataDaysThisWeek = [];;
+        $dataDaysThisWeek = [];
         $dataDaysLastWeek = [];
 
         $dataItems = array(
@@ -399,6 +406,59 @@ class graphController extends Controller
             'dataItems' => $dataItems,
         );
     }
+
+
+    private function winnings($date_start, $agent, $dataWeeks, $weekLabels): array
+    {
+
+        // Nueva grafica
+        $startWeek = $date_start->copy()->startOfWeek();
+        $endtWeek = $date_start->copy()->endOfWeek(Carbon::SATURDAY);
+
+        $day = $startWeek->copy()->endOfWeek(Carbon::SATURDAY)->isoFormat('D');
+        $month = $startWeek->copy()->endOfWeek()->isoFormat('MMMM');
+        $weekLabel =  'Semana ' . $day . ' ' . $month;
+        $sql = [];
+        $sql[] = ['created_at', '>=', $startWeek];
+        $sql[] = ['created_at', '<=', $endtWeek];
+        $sql[] = ['id_agent', $agent];
+
+        $dataAmount = array(
+            'credits' => db_credit::where($sql)->sum('amount_neto') * 0.2,
+            'bills' =>   db_bills::where($sql)->sum('amount')
+        );
+        $dataItems = array(
+            'credits' => db_credit::where($sql)->count(),
+            'bills' =>   db_bills::where($sql)->count()
+        );
+        $creditsWeeks = [];
+        $billsWeeks = [];
+        foreach ($dataWeeks as $dataWeek) {
+            $creditsWeeks[] = db_credit::where($dataWeek)->sum('amount_neto') * 0.2;
+            $billsWeeks[] = db_bills::where($dataWeek)->sum('amount');
+        }
+        return array(
+            'dataDays' => array(
+                'labels' => $weekLabels,
+                'data' => array(
+                    'thisWeek' => $creditsWeeks,
+                    'lastWeek' => $billsWeeks
+                ),
+            ),
+            'dataWeeks' => array(
+                'labels' => $weekLabels,
+                'data' => array(
+                    'credits' => $creditsWeeks,
+                    'bills' => $billsWeeks
+                ),
+            ),
+            'dataAmount' => $dataAmount,
+            'dataItems' => $dataItems,
+            'labelsWinn' => $weekLabel,
+        );
+    }
+
+
 
     /**
      * Display the specified resource.
