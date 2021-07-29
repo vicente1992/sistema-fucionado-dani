@@ -95,12 +95,13 @@
                 'Ganancias y Gastos',
                 'dataAmount'
             );
-            graphicsWinnings(
-                [dataGraph.dataItems.credits, dataGraph.dataItems.bills],
-                [dataGraph.labelsWinn, dataGraph.labelsWinn],
-                'Cantidad de ganancias y gastos',
-                'dataItems'
-            );      
+                  
+            graphicsWeeks(
+              dataGraph.dataWeeksNeto.data,
+              dataGraph.dataWeeksNeto.labels,
+              'Ganancias netas por semana',
+              'dataItems'
+              );
 
             graphicsWeeksWinn(
             dataGraph.dataWeeks.data,

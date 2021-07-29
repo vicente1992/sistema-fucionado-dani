@@ -427,16 +427,15 @@ class graphController extends Controller
             'credits' => db_credit::where($sql)->sum('amount_neto') * 0.2,
             'bills' =>   db_bills::where($sql)->sum('amount')
         );
-        $dataItems = array(
-            'credits' => db_credit::where($sql)->count(),
-            'bills' =>   db_bills::where($sql)->count()
-        );
         $creditsWeeks = [];
         $billsWeeks = [];
+        $winningsNet = [];
         foreach ($dataWeeks as $dataWeek) {
             $creditsWeeks[] = db_credit::where($dataWeek)->sum('amount_neto') * 0.2;
             $billsWeeks[] = db_bills::where($dataWeek)->sum('amount');
+            $winningsNet[] = (db_credit::where($dataWeek)->sum('amount_neto') * 0.2) - db_bills::where($dataWeek)->sum('amount');
         }
+
         return array(
             'dataDays' => array(
                 'labels' => $weekLabels,
@@ -452,8 +451,12 @@ class graphController extends Controller
                     'bills' => $billsWeeks
                 ),
             ),
+            'dataWeeksNeto' => array(
+                'labels' => $weekLabels,
+                'data' => array($winningsNet),
+            ),
+
             'dataAmount' => $dataAmount,
-            'dataItems' => $dataItems,
             'labelsWinn' => $weekLabel,
         );
     }
